@@ -1,0 +1,21 @@
+SELECT PE.dh_refno,PE.dh_bcode,PE.dh_bbrcode,PE.dh_name,PE.dh_agecode,PE.dh_agename,PE.dh_nic,PE.dh_br,PE.dh_padd1,PE.dh_padd2,PE.dh_padd3,PE.dh_padd4,
+  PE.dh_phone,PE.dh_email,PE.dh_iadd1,PE.dh_iadd2,PE.dh_iadd3,PE.dh_iadd4,PE.dh_pfrom,PE.dh_pto,PE.dh_uconstr,PE.dh_occu_car,
+  PE.dh_occ_yes_reas,PE.dh_haz_occu,PE.dh_haz_yes_rea,PE.dh_valu_build,PE.dh_valu_wall,PE.dh_valu_total,PE.dh_aff_flood,PE.dh_aff_yes_reas,PE.dh_wbrick,PE.dh_wcement,PE.dh_dwooden,PE.dh_dmetal,PE.dh_ftile,
+  PE.dh_fcement,PE.dh_rtile,PE.dh_rasbes ,PE.dh_rgi,PE.dh_rconcreat,PE.dh_cov_fire,PE.dh_cov_light,PE.dh_cov_flood,
+  PE.dh_cfwateravl,PE.dh_cfyesr1,PE.dh_cfyesr2,PE.dh_cfyesr3,PE.dh_cfyesr4,PE.dh_entered_by,PE.dh_entered_on,PE.dh_hold,
+------------------------------>>>>>>>>>>>>>>>>>>>
+  SC.sc_ref_no,SC.sc_policy_no,SC.sc_sum_insu,SC.sc_net_pre,SC.sc_rcc,
+  SC.sc_tr,SC.sc_admin_fee,SC.sc_policy_fee,SC.sc_nbt,SC.sc_vat,SC.sc_total_pay,SC.created_on,SC.created_by,SC.flag    
+        FROM 
+  
+        QUOTATION.FIRE_DH_PROPOSAL_ENTRY PE
+        INNER JOIN QUOTATION.FIRE_DH_SCHEDULE_CALC SC
+        ON PE.DH_REFNO= SC.SC_REF_NO
+        WHERE PE.dh_refno IS NOT NULL
+        AND PE. DH_REFNO=''       
+        AND SC.sc_policy_no=''
+        AND PE.dh_hold=''
+        
+sql += "and(to_date(to_char(PE.dh_entered_on,'dd/MM/yyyy'),'dd/MM/yyyy') >= to_date('" + start_date + "','dd/MM/yyyy') ";
+sql += "and to_date(to_char(PE.dh_entered_on,'dd/MM/yyyy'),'dd/MM/yyyy') <= to_date('" + end_date + "','dd/MM/yyyy')) ";   
+        

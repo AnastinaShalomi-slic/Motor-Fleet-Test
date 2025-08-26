@@ -1,0 +1,733 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="PremiumCal.aspx.cs" Inherits="Bank_Fire_PremiumCal" %>
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
+   <%--  <link rel="Stylesheet" href="../Styles/Message_Box.css"/>
+    <link type="text/css" href="../css/ui-lightness/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
+
+    <script src="../Auto_compl_Js/jquery-1.10.0.min.js" type="text/javascript"></script>
+    <script src="../Auto_compl_Js/jquery-ui.min.js" type="text/javascript"></script>
+    <link href="../Auto_compl_Js/jquery-ui.css" rel="stylesheet" />
+
+    <link rel="Stylesheet" href="../js/ddl_search/select2.css"/>
+    <script src="../js/ddl_search/select2.js" type="text/javascript"></script>
+    <script src="../js/Phone_Number/jquery.maskedinput-1.3.1.min_.js" type="text/javascript"></script>
+    <script src="../js/gridviewScroll.min.js"  type="text/javascript"></script>
+     <script src="Scripts/jquery-3.3.1.slim.min.js"></script>
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+      <script src="../sweetCSS/sweetalert.min.js" type="text/javascript"></script>--%>
+
+
+<style type="text/css">       
+   .fieldset_1{ margin-top:10px; height:520px; border-color:#b3b3b3;} 
+   .importGrid_Header{height:25px; font-family: "Times New Roman"; font-size:10pt; background-color:#e6e6e6; color:#000000; white-space:nowrap;}
+   .importGrid_Row{height:20px; font-family: "Times New Roman"; font-size:10pt; color:#000000; white-space:normal;}
+   .importGrid_Footer{height:25px; font-family: "Times New Roman"; font-size:11pt; background-color:#f2f2f2; color:#000000; font-weight: bold;}
+   .wordrap {white-space: nowrap;}
+   
+   .ui-position{padding-left: 10px;}  
+   .ui-datepicker { font-size:10pt !important}
+   .ui-datepicker-trigger{margin-left:3px; vertical-align:middle; margin-bottom:3px;}
+      
+   .gridfont{font-size:12px;}   
+   .hidden{ display:none; }
+    
+        
+    
+.GridviewScrollHeader TH, .GridviewScrollHeader TD
+    {
+        padding: 4px;        
+        font-weight: 600;
+        white-space:nowrap;
+        border-right: 1px solid #AAAAAA;
+        border-bottom: 1px solid #AAAAAA;
+        background-color: #27566B;
+        text-align: center;
+        vertical-align: bottom;
+        font-family:Arial;
+    }
+    .GridviewScrollItem TD
+    {
+        padding: 4px;
+        white-space: nowrap;
+        border-right: 1px solid #AAAAAA;
+        border-bottom: 1px solid #AAAAAA;
+        background-color: #FFFFFF;
+        font-family:Arial;
+    }
+    .GridviewScrollPager 
+    {
+        border-top: 1px solid #AAAAAA;
+        background-color: #FFFFFF;
+    }
+    .GridviewScrollPager TD
+    {
+        padding-top: 3px;
+        font-size: 12px;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    .GridviewScrollPager A{color: #666666;}
+    .GridviewScrollPager SPAN{ font-size: 14px; font-weight: bold; }
+   
+   .rowheight{ height:28px;}
+    
+    .ui_txt_border{ border : 1px solid  #a6a6a6; height:20px;}
+    
+    .ui_comp_hide{ display:none}
+    
+    
+    .LabelClass 
+    {
+      display: inline-block;
+      float: left;
+      width: 194px;
+      padding-top:5px;
+      color:black;/*#355681;*/
+      font-weight:bold;
+      font-size:small;
+      font-family:Arial;
+     }
+        
+     .div_dec
+     {
+      padding-top:20px;
+      padding-left:20px;
+      padding-bottom:10px;
+      width:100%;
+     } 
+     
+     .div_dec_3
+     {
+      padding-top:20px;
+      padding-left:20px;
+      padding-bottom:10px;
+      height:159px; 
+      }  
+      
+     .div_attach
+     {
+     float:left;
+     padding-left:10px;
+     height: 161px;
+     border-style:hidden;
+     border-color:Gray;
+     width:380px; 
+     /*display:inline-block;*/
+    
+        
+    }
+     .div_two
+     {
+      float:left;
+      width:50%; 
+      margin-left:0px;
+     }
+     
+     .div_three
+     {
+      float:left;
+      width:50%;
+      margin-top:-110px;
+    }
+     .remark_tag{
+      float:left;
+      width:50%;
+      margin-top:10px;
+      margin-left:200px;
+     }
+     .div_btn
+     {
+      padding-top:50px;
+      padding-left:20px;
+      padding-bottom:10px;
+     }
+     .btImgClass
+     {
+       margin-left:5px;                  
+     }
+     .btImgClass2
+     {
+       margin-left:-80%;                  
+     }
+     
+     .labelpdf
+     {
+       margin-left:150px; 
+       color:#1A5276;    
+       font-weight:bold;
+       font-size:small;   
+       font-family:Arial;
+     }
+     
+     
+     .txt_box
+     {
+       text-align:right;   
+     width:50%;  
+       
+ font-family    :  verdana, arial, snas-serif;
+ font-size      :  16px;
+ color          :  #000000;
+ padding        :  3px;
+ /*background     :  #f0f0f0;*/
+ border-left    :  solid 0px #c1c1c1;
+ border-top     :  solid 0px #cfcfcf;
+ border-right   :  solid 0px #cfcfcf;
+ border-bottom  :  solid 0px #6f6f6f;
+ border-radius:0px;
+     }
+     
+     .txt_box3
+     {
+         text-align:right;
+     width:50%;    
+ font-family    :  verdana, arial, snas-serif;
+ font-size      :  16px;
+ color          :  #000000;
+ padding        :  3px;
+ /*background     :  #f0f0f0;*/
+ border-left    :  solid 0px #c1c1c1;
+ border-top     :  solid 0px #cfcfcf;
+ border-right   :  solid 0px #cfcfcf;
+ border-bottom  :  solid 0px #6f6f6f;    
+ border-radius:0px;
+         
+    }
+    
+    .remark
+    {   
+      display: inline-block;
+      float: left;
+      margin-top:5px;
+      /*margin-left:60px;*/
+      /*padding-top:10px;*/
+      border : 1px solid #b3b3b3;
+      border-radius:0px;
+      /*color:#355681;*/
+      /*text-align:center;*/   
+   
+      
+ font-family    :  verdana, arial, snas-serif;
+ font-size      :  12px;
+ color          :  #000000;
+ padding        :  3px;
+ background     :  #f0f0f0;
+ border-left    :  solid 1px #c1c1c1;
+ border-top     :  solid 1px #cfcfcf;
+ border-right   :  solid 1px #cfcfcf;
+border-bottom  :  solid 1px #6f6f6f;
+      
+    }
+        
+        
+        
+     .remarkLabel 
+    {
+      display: inline-block;
+      float: left;
+      width: 98px;
+      padding-top:10px;
+      margin-top:30px;
+      margin-left:17px;
+      color:black;/*#355681;*/
+      font-weight:bold;
+      font-size:small;
+      font-family:Arial;
+      border-radius:0px;
+ 
+    }
+     
+    
+    
+      .btn_clz{
+            background-color:#e3c353; /*#355681*/ /*#476b6b; #006666;*/
+            color: #000000;
+            font-size: 12px;
+            width: 100px;
+            font-weight: bold;
+            height:30px;
+            border:0px;
+            /*background-color: cadetblue;*/
+            border-radius:0px;
+
+        }
+        
+      .btn_clz_print{
+            background-color:#45B39D; /*#355681*/ /*#476b6b; #006666;*/
+            color: #fff;
+            font-size: 12px;
+            width: 100px;
+            font-weight: bold;
+            height:30px;
+            border:0px;
+            /*background-color: cadetblue;*/
+            border-radius:0px;
+            padding-bottom:30px;
+            padding-top:5px;
+        }
+
+
+        .btn_clz_2
+        {
+            background-color:#e3c353; /*#355681*/ /*#476b6b; #006666;*/
+            color: #000000;
+            font-size: 10px;
+            width: 150px;
+            font-weight: bold;
+            height:30px;
+            border:0px;
+            /*background-color: cadetblue;*/
+            border-radius:0px;
+            }
+        
+        
+       .btn_clz:hover
+        {
+            background-color: #b3e6ff;
+            color: #000;
+        }
+    
+    
+     .btn_clz_msg{
+             background-color:#e3c353; /*#355681*/ /*#476b6b; #006666;*/
+            color: #000000;
+            font-size: 12px;
+            width: 100px;
+            font-weight: bold;
+            height:30px;
+            border:0px;
+            /*background-color: cadetblue;*/
+            border-radius:0px;
+            
+        }
+       .btn_clz_msg:hover
+        {
+            background-color: #b3e6ff;
+            color: #000;
+        }
+
+
+        .btn_clz3
+        {
+            background-color: #355681; /*#476b6b; #006666;*/
+            color: #fff;
+            font-size: 8px;
+            width: 85%;
+            font-weight: 600;
+            height:80px;
+            border:2px solid #6f6f6f;  
+            padding:5px 5px 5px 5px;
+            
+            WORD-WRAP: break-word;
+            /*background-color: cadetblue;*/
+            border-radius:0px;
+            }
+        
+        
+       .btn_clz3:hover
+        {
+            background-color: #b3e6ff;
+            color: #000;
+        }
+
+    .body_div 
+         {
+        background-color:#E2E9EE;
+        width:100%;
+        
+         }
+
+    .lblDocURL {
+        color:black;
+    }
+    
+      .hidepanel {
+            display: none;
+        }
+
+        .MessagePanelDiv {
+            position: fixed;
+            left: 35%;
+            top: 45%;
+            width: 35%;
+        }
+
+        .pendingTimeclz{
+            font-size:12px; 
+            color:#fa5f5f;/*#fa9393;*/ 
+            padding-right:30px;
+            font-family:Arial, Helvetica, sans-serif;
+            opacity: 1.0;
+            /*display:none;*/
+            /*text-shadow: 0px 0px 30px white;*/
+  
+        }
+
+   
+
+    .divLegent{ width:50%;}
+   .swal-overlay {
+  background-color: rgba(43, 165, 137, 0.45);
+}
+
+   td
+    {
+        /*color:#2f414d;*/
+        color:#1A5276;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    </style>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+
+
+     <script type="text/javascript">
+
+     function Alert() {
+
+     //$("#btn_find").click(function () {
+          //swal("Hello world!");
+         swal("Done!", "Request in process.!", "success", {
+             button: false,
+         });
+               
+   
+
+        }
+
+
+
+         function AlertDownload() 
+      {
+             swal("Done!", "Excel File in process.!", "success", {
+                 button: false,
+                 //timer: 3000,
+            });
+                     
+      }
+ </script>
+
+
+     <script type="text/javascript">
+
+
+
+        /*---------------------------auto complete ----------*/
+
+
+        $(function () {
+            $("[id$=quotRefNo]").autocomplete({
+
+                source: function (request, response) {
+
+                    $.ajax({
+                        url: '<%=ResolveUrl("ViewPageSecond.aspx/Get_Ref_No") %>',
+                        data: "{ 'prefix': '" + request.term + "'}",
+                        dataType: "json",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+
+                        success: function (data) {
+
+                            response($.map(data.d, function (item) {
+                                return {
+
+                                    label: item.split('-')[0],
+                                    val: item.split('-')[1]
+
+
+                                }
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    //$("[id$=hfCustomerId]").val(i.item.val);
+                },
+                minLength: 1
+
+            });
+        });
+
+
+        $(document).ready(function () {
+
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
+
+            function EndRequestHandler(sender, args) {
+
+                $(function () {
+                    $("[id$=quotRefNo]").autocomplete({
+
+                        source: function (request, response) {
+
+                            $.ajax({
+
+                                url: '<%=ResolveUrl("~/ViewPageSecond.aspx/Get_Ref_No") %>',
+                                data: "{ 'prefix': '" + request.term + "'}",
+                                dataType: "json",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (data) {
+
+                                    response($.map(data.d, function (item) {
+                                        return {
+                                            label: item.split('-')[0],
+                                            val: item.split('-')[1]
+
+                                        }
+                                    }))
+                                },
+                                error: function (response) {
+                                    alert(response.responseText);
+                                },
+                                failure: function (response) {
+                                    alert(response.responseText);
+                                }
+                            });
+                        },
+                        select: function (e, i) {
+                            //$("[id$=hfCustomerId]").val(i.item.val);
+                        },
+                        minLength: 1
+
+                    });
+
+                });
+
+                /********************************************************************************/
+            }
+
+        });
+
+
+
+
+
+    function confirmFun(id,mgs)
+    {
+		
+	var buttonText = document.getElementById(id);
+
+            if (confirm(mgs)==true)
+            {
+                //buttonText.value = 'Please wait...';
+                return true;
+            }
+			else
+			{
+				return false;
+			}
+            
+        };
+
+          $(document).ready(function () {
+            window.setTimeout(function () {
+                $(".alert").fadeTo(1000, 0).slideUp(0, function () {
+                    $(this).remove();
+                    //$(".alert2").show();
+                    //$("#pendingTime").delay(100).fadeIn("fast");
+                    
+                });
+            }, 3000);
+        });     
+
+        $(document).ready(function() {
+           $('.pendingTimeclz').delay(1600).fadeIn(2200);
+        });   
+  </script>    
+
+<asp:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server" ScriptMode="Release"> </asp:ToolkitScriptManager>
+    <asp:HiddenField ID="UserId" runat="server" />
+    <asp:HiddenField ID="Less_text" runat="server" />
+    <asp:HiddenField ID="Reson_temp" runat="server" />
+    <asp:HiddenField ID="app_date" runat="server" />
+    <asp:HiddenField ID="reqDate" runat="server" />
+    <asp:HiddenField ID="HiddenFieldRemark" runat="server" />
+     <asp:HiddenField ID="bank_code" runat="server" />
+    <asp:HiddenField ID="statusHidden" runat="server" />
+    <asp:HiddenField ID="sumInsuVal" runat="server" />
+    <asp:HiddenField ID="user_epf" runat="server" />
+    <asp:HiddenField ID="req_status" runat="server" />
+    <asp:HiddenField ID="brCode" runat="server" />
+
+
+    <div class="container border border-info" id="CalDiv" runat="server">
+         <div class="form-group row" runat="server" id="CalDiv1">
+        <div class="col-sm-4">Reference No.</div>
+        <div class="col-sm-4">
+            <asp:TextBox ID="txt_Ref_no" runat="server" CssClass="form-control"></asp:TextBox>  
+        </div>
+        <div class="col-sm-3"></div>
+        </div>
+        <div class="form-group row" runat="server" id="CalDiv2">
+        <div class="col-sm-4">Premium Details</div>
+        <div class="col-sm-4"></div>
+        <div class="col-sm-3"></div>
+        </div>
+
+         <div class="form-group row" runat="server" id="CalDiv3">
+        <div class="col-sm-4">Net Premium</div>
+        <div class="col-sm-1">Rs.</div>
+        <div class="col-sm-3">
+            <asp:TextBox ID="txt_NetPre" runat="server" CssClass="form-control"></asp:TextBox>
+        </div>
+        </div>
+
+
+        <div class="form-group row" runat="server" id="CalDiv4">
+        <div class="col-sm-4">SRCC</div>
+        <div class="col-sm-1">Rs.</div>
+        <div class="col-sm-3">
+            <asp:TextBox ID="txt_srcc" runat="server" CssClass="form-control"></asp:TextBox>
+        </div>
+        </div>
+
+        <div class="form-group row" runat="server" id="CalDiv5">
+        <div class="col-sm-4">TR</div>
+        <div class="col-sm-1">Rs.</div>
+        <div class="col-sm-3">
+           <asp:TextBox ID="txt_tr" runat="server" CssClass="form-control" ></asp:TextBox>
+        </div>
+        </div>
+
+         <div class="form-group row" runat="server" id="CalDiv6">
+        <div class="col-sm-4">Admin Fee</div>
+        <div class="col-sm-1">Rs.</div>
+        <div class="col-sm-3">
+           <asp:TextBox ID="txt_adminFee" runat="server" CssClass="form-control"></asp:TextBox>
+        </div>
+        </div>
+
+        <div class="form-group row" runat="server" id="CalDiv7">
+        <div class="col-sm-4">Policy Fee</div>
+        <div class="col-sm-1">Rs.</div>
+        <div class="col-sm-3">
+          <asp:TextBox ID="txtPoliFee" runat="server" CssClass="form-control"></asp:TextBox>
+        </div>
+        </div>
+
+         <div class="form-group row" runat="server" id="CalDiv8">
+        <div class="col-sm-4">NBT</div>
+        <div class="col-sm-1">Rs.</div>
+        <div class="col-sm-3">
+          <asp:TextBox ID="txt_nbt" runat="server" CssClass="form-control"></asp:TextBox>
+        </div>
+        </div>
+
+        <div class="form-group row" runat="server" id="CalDiv9">
+        <div class="col-sm-4">VAT</div>
+        <div class="col-sm-1">Rs.</div>
+        <div class="col-sm-3">
+          <asp:TextBox ID="txt_vat" runat="server" CssClass="form-control"></asp:TextBox>
+        </div>
+        </div>
+
+        <div class="form-group row" runat="server" id="CalDiv10">
+        <div class="col-sm-4">Total Payable</div>
+        <div class="col-sm-1">Rs.</div>
+        <div class="col-sm-3">
+          <asp:TextBox ID="txtTotalPay" runat="server" CssClass="form-control"></asp:TextBox>
+        </div>
+        </div>
+
+        </div>
+
+
+
+
+
+
+     <div class="container border border-info" id="quo" runat="server">
+         <div class="form-group row" runat="server" id="re001">
+        <div class="col-sm-4"><asp:Label ID="complete_tag" runat="server" Text="Need an approval from SLIC"></asp:Label>
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
+         
+        </div>
+        </div>
+
+
+         <div class="form-group row" runat="server" id="re002">
+        <div class="col-sm-4">
+            <span id="spanRefNo" runat="server">SLIC will attend and confirm the Policy.<br/> Premium may change due to the risk of flood cover.</span>
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
+         
+        </div>
+        </div>
+
+           <div class="form-group row" runat="server" id="re003">
+        <div class="col-sm-4">
+            <asp:Button ID="btsendrequest" runat="server"  Text="Send Request!" UseSubmitBehavior="true" OnClientClick="Alert()" CssClass="btn_clz" OnClick="btsendrequest_Click" />
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
+         
+        </div>
+        </div>
+
+<div class="form-group row" runat="server" id="re004">
+        <div class="col-sm-4">
+            <asp:Label ID="lblreqsend" runat="server" Text="Request Successfully Sent to SLIC"></asp:Label>
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
+         
+        </div>
+        </div>
+         
+
+     </div>
+    
+    <div class="container border border-info" id="printProp" runat="server">
+        <div class="form-group row" runat="server" id="DivPrint1">
+        <div class="col-sm-4"><asp:Label ID="lblprop" runat="server" Text="Click Print for Policy Schedule" Visible="false"></asp:Label>
+       <span id="span1" runat="server" >Click here to confirm and <br />print the policy schedule / payment advice.</span>
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
+         
+        </div>
+        </div>
+
+
+         <div class="form-group row" runat="server" id="Div1">
+        <div class="col-sm-4">
+            <asp:Button runat="server" OnClick="Button1_Click" Font-Size="25px" CssClass="btn_clz_print" ID="printWording" Text="Print" />
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
+         
+        </div>
+        </div>
+    </div>
+
+
+
+
+ 
+     <div id="dv1" runat="server">*</div>
+     <asp:Label ID="lblCover" runat="server" Text="">**///</asp:Label>
+
+    
+        
+    <div class="MessagePanelDiv">
+   <asp:Panel ID="Message" runat="server" CssClass="hidepanel">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <asp:Label ID="labelMessage" runat="server" />
+   </asp:Panel>
+ </div>
+
+    
+</asp:Content>

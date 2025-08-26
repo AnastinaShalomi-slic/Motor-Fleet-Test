@@ -1,0 +1,227 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage2.master.cs" Inherits="MasterPage2" %>
+
+<%@ Register Namespace="AjaxControlToolkit" Assembly="AjaxControlToolkit" TagPrefix="ajax" %>
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head runat="server">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternative Master Page</title>
+
+    <!-- Bootstrap & CSS -->
+
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Content/bootstrap-datepicker.css" rel="stylesheet" />
+    <link href="Content/bootstrap-grid.css" rel="stylesheet" />
+
+    <script src="<%= Page.ResolveUrl("~/Scripts/jquery-3.5.1.min.js") %>"></script>
+    <script src="<%= Page.ResolveUrl("~/Scripts/popper.min.js") %>"></script>
+    <script src="<%= Page.ResolveUrl("~/Scripts/bootstrap.min.js") %>"></script>
+    <script src="<%= Page.ResolveUrl("~/sweetCSS/sweetalert.min.js")%>"></script>
+    <script src="<%= Page.ResolveUrl("~/Scripts/bootstrap-datepicker.min.js") %>"></script>
+
+    <script src="<%= Page.ResolveUrl("~/JavaScripts/Font_Awsome.js")%>"></script>
+    <script src="<%= Page.ResolveUrl("~/Auto_compl_Js/jquery-ui.js")%>" type="text/javascript"></script>
+    <%--<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>--%>
+    <link href="Auto_compl_Js/jquery-ui.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            $(document).keypress(function (e) {
+                var keyCode = (window.event) ? e.which : e.keyCode;
+                if (keyCode && keyCode == 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+    <style type="text/css">
+        * {
+            font-family: Calibri;
+            /*font-size:medium;*/
+        }
+
+        .bs-example {
+            margin: auto;
+            /*background-color:#80EBED;*/
+        }
+
+        .centerIconPanelMain {
+            text-align: center;
+            /*width: 100%;*/
+            font-size: 100px;
+            color: #ffffff;
+            /*border:solid #ff0000;*/
+        }
+
+        .CardBackgroundMain {
+            /*background-color:  rgba(15, 95, 73, 0.90);*/ /*rgba(0,172,186, 0.50);*/
+            background-color: rgba(255, 255, 255, 0.10);
+        }
+
+        .cardProp {
+            min-height: 110px;
+            min-width: 110px;
+            border: 1px solid #ffffff;
+            text-align: center;
+            /*border-right: 5px solid rgba(24, 149, 165, 0.83) /*#b2081c*/ /*#FF2470 rgba(24, 149, 165, 0.83);
+        border-radius: 12px;*/
+        }
+
+        .img_sizeMain {
+            max-height: 80px;
+            max-width: 80px;
+            align-items: center;
+        }
+
+        .img_sizeHome {
+            max-height: 40px;
+            max-width: 40px;
+            align-items: center;
+        }
+
+        .img_sizeIcon {
+            max-height: 30px;
+            max-width: 30px;
+            /*align-items:center;*/
+        }
+
+        .item_cssSecondMain {
+            color: #ffd800;
+            font-family: Calibri;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .CardBackgroundMain {
+            /*background-color:  rgba(15, 95, 73, 0.90);*/ /*rgba(0,172,186, 0.50);*/
+            background-color: rgba(255, 255, 255, 0.10);
+        }
+
+        .testClass {
+            /*font-family: Courier New, Courier, monospace;*/
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .backGroundMain {
+            background-color: #F9F9F9; /*#026888;*/
+            /*background-color:rgb(22, 163, 135);*/ /*#45B39D #037680*/
+            /*background-image:url(../IconPack/BackgroundImage.png);*/
+            /*background-image:url(../Images/Health1.jpg);*/
+            /*background-color:#edebeb;*/
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: 90% 10%;
+            background-attachment: fixed;
+            /*background-image: url("../Images/001_SLIC.jpg");*/
+        }
+
+        .item_cssSecond {
+            color: #000;
+            font-family: Calibri;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .topBar {
+            background-color: /*#303560*/ /*#154c79*/ #00adba; /*#6BA7AD*/
+        }
+        /*#9FBDC0; #9FADC0; #00ffef; #30D5C8*/
+        .modelBtn {
+            /*background-color:rgba(37, 168, 185, 0.90);*/
+            max-height: 40px;
+            max-width: 80px;
+        }
+
+        .textColor {
+            text-align: center;
+            max-height: 38px;
+            font-size: 16px;
+        }
+
+        .img_sizeIcon {
+            max-height: 30px;
+            max-width: 30px;
+        }
+
+        .headerNav:hover {
+            font-size: larger;
+        }
+    </style>
+
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+</head>
+<body class="bg-light">
+    <form id="form1" runat="server">
+
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark " style="background-color: #008B80;">
+            <a href="FireDefault.aspx" class="navbar-brand" runat="server">
+
+                <img src="Images/slic321.png" class="img-fluid img_sizeMain d-block mx-auto centerIconPanelMain" alt="SLIC" runat="server" />
+            </a>
+
+            <a class="navbar-brand" href="FireDefault.aspx">SLIC Fire Renewal SMS Portal</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                <div class="nav-item dropdown" id="pageFireRenewal" runat="server">
+                    <a href="#" class="nav-link dropdown-toggle font-weight-bold headerNav m-1 textColor"
+                        style="color: #ffffff;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Fire Renewal
+                    </a>
+                    <div class="dropdown-menu bg-light">
+                        <a href="<%= ResolveUrl("~/SLIC_Fire/FireRenewal.aspx") %>" class="dropdown-item">Renew Policy - Submission</a>
+                        <a href="<%= ResolveUrl("~/SLIC_Fire/FireRenewalSumNotChanged.aspx") %>" class="dropdown-item">Sum Insured Not Changed - Send SMS</a>
+                        <a href="<%= ResolveUrl("~/SLIC_Fire/FireRnViewProgress.aspx") %>" class="dropdown-item">Not Approved List</a>
+                        <%--<a href="<%= ResolveUrl("~/SLIC_Fire/ApprovedRenewal.aspx") %>" class="dropdown-item">Renewed Policies</a>--%>
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown" id="Div1" runat="server">
+                    <a href="#" class="nav-link dropdown-toggle font-weight-bold headerNav m-1 textColor"
+                        style="color: #ffffff;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin Options
+                    </a>
+                    <div class="dropdown-menu bg-light">
+                        <a href="<%= ResolveUrl("~/SLIC_Fire/ApprovalForm.aspx") %>" class="dropdown-item">Renew Policy - Approval</a>
+                        <%--<a href="<%= ResolveUrl("~/SLIC_Fire/ApprovedRenewal.aspx") %>" class="dropdown-item">Renewed Policies</a>--%>
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown" id="pageReports" runat="server">
+                    <a href="#" class="nav-link dropdown-toggle font-weight-bold headerNav m-1 textColor"
+                        style="color: #ffffff;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reports
+                    </a>
+                    <div class="dropdown-menu bg-light">
+                        <a href="<%= ResolveUrl("~/SLIC_Fire/RN_SMS_REPORTS/NormalRNSMSReport.aspx?PPW=flse") %>" class="dropdown-item">Fire Renewal SMS Reports</a>
+                        <a href="<%= ResolveUrl("~/SLIC_Fire/RN_SMS_REPORTS/NormalRNSMSReport.aspx?PPW=true") %>" class="dropdown-item">PPW Cancel Report</a>
+                        <a href="<%= ResolveUrl("~/SLIC_Fire/RN_SMS_REPORTS/SummeryReport.aspx?") %>" class="dropdown-item">Summery Report</a>
+                        <%--<a href="<%= ResolveUrl("~/Reports/Report2.aspx") %>" class="dropdown-item">SMS Sent to Sum-Insured Not Changed</a>--%>
+                        <!-- Add more report links as needed -->
+                    </div>
+                </div>
+
+            </div>
+
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid mt-4">
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+            <%--<asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>--%>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer text-white text-center py-3 mt-5 " style="background-color: #008B80;">
+            &copy; <%= DateTime.Now.Year %> SLIC. All rights reserved.
+        </footer>     
+
+    </form>
+</body>
+</html>

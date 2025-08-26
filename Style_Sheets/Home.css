@@ -1,0 +1,180 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    /*background-image: url('../Images/001_SLIC.jpg');*/
+    /*background: url('../Images/cover_slic_logo_third.jpg') no-repeat;*/
+    /*background-size:cover;*/
+    /*background-repeat:no-repeat;*/
+    background-position: top,right;
+    font-family: sans-serif;
+    height: auto;
+    background-color: #45B39D;
+    /*background-color: #009688;*/
+    /*overflow :hidden;*/
+}
+
+.Loginbox {
+    width: 30%;
+    height: 60%;
+    /*background:#283850;*/
+    color: #000;
+    top: 35%;
+    left: 45%;
+    position: fixed;
+    transform: translate(-50%,-50%);
+    box-sizing: border-box;
+    padding: 70px 30px;
+    opacity: 0.9;
+}
+
+.avatar {
+    width: 30%;
+    height: 28%;
+    border-radius: 50%;
+    border: 1px solid #BADA55;
+    position: absolute;
+    top: -50px;
+    left: 35%;
+}
+
+h1 {
+    margin: 0;
+    padding: 10px 0 20px;
+    text-align: center;
+    font-size: 22px;
+}
+
+.Loginbox p {
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    font-size: 20px;
+    width: 100%;
+}
+
+.Loginbox input {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+    .Loginbox input[type="text"], input[type="password"] {
+        border: none;
+        border-bottom: 1px solid #000;
+        background: transparent;
+        outline: none;
+        height: 45px;
+        color: #000;
+        font-size: 14px;
+    }
+
+/*.Loginbox input [type ="submit"] {
+        border: none;
+        outline: none;
+        height: 40px;
+        background: #fb2525;
+        color: #ffffff;
+        font-size: 18px;
+        border-radius: 20px;
+    }
+    .Loginbox input [type ="submit"]:hover
+    {
+            cursor: pointer;
+            background: #ffc167;
+            color: #000;
+    }*/
+
+.btsubmit {
+    border: none;
+    outline: none;
+    height: 40px;
+    background: #45B39D;
+    /*#fb2525;*/
+    color: #ffffff;
+    font-size: 18px;
+    border-radius: 20px;
+    font-family: sans-serif;
+    font-size: 16px;
+    margin-top: 5%;
+}
+
+    .btsubmit:hover {
+        cursor: pointer;
+        background: #5bc0de;
+        color: #000;
+    }
+.mainDiv {
+    margin-left: 20%;
+    margin-top: 6%;
+    width: 60%;
+    /*height:50%;*/
+    border: 0px solid #808080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: row wrap;
+}
+.icon1 {
+    float: left;
+    border: none;
+    outline: none;
+    height: 100px;
+    width: 20%;
+    /*background: #e3c353;*/ /*#283850;*/
+    /*#fb2525;*/
+    color: #ffffff;
+    font-size: 18px;
+    border-radius: 0px;
+    font-family: sans-serif;
+    font-size: 16px;
+    margin: 10px; /*flex margin set*/
+    /*margin: 2%;*/
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 1px solid #ffffff;
+    margin-top:30px;
+}
+.mainDiv01 {
+    margin-left: 20%;
+    margin-top: 5%;
+    width: 60%;
+    height: auto;
+    border: 0px solid #808080;
+    background-color: #ffffff;
+    border-radius: 0px;
+
+
+    /*display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: row wrap;*/
+
+}
+.footer {
+    position: fixed;
+    bottom: 0%;
+    width: 100%;
+    vertical-align: bottom;
+    text-align: center;
+    color: #ffffff;
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 100%;
+    opacity: 0.5;
+    /*color: #000000;
+    padding: 8px 0px 0px 0px;
+    margin: 0px auto;
+    text-align: center;
+    line-height: normal;*/
+}
+
+    .footer a {
+        color: cadetblue;
+    }
+
+#footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem; /* Footer height */
+    opacity:.5;
+}

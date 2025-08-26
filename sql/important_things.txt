@@ -1,0 +1,68 @@
+$(function () {
+        $("input[id$='txt_fromDate']").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showOtherMonths: true,
+            yearRange: '2016:+10',
+            dateFormat: 'dd/mm/yy',
+            defaultDate: +0,
+            numberOfMonths: 1,
+            //maxDate: toDate,
+            showAnim: 'slideDown',
+            showButtonPanel: false,
+            showWeek: true,
+            firstDay: 1,
+            stepMonths: 0,
+            //showOn: "button",
+            buttonImage: "../Images/delete.gif",
+            buttonImageOnly: true,
+            buttonText: "Select date",
+            onSelect: function (selectedDate) {
+                $("#txt_toDate").datepicker("option", "minDate", selectedDate);
+                <%-- document.getElementById('<%=txt_toDate.ClientID%>').value = selectedDate + 365;      --%>         
+            }
+        });
+    });
+
+
+    $(function () {
+        $("input[id$='txt_toDate']").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showOtherMonths: true,
+            yearRange: '2016:+10',
+            dateFormat: 'dd/mm/yy',
+            defaultDate: +0,
+            numberOfMonths: 1,
+            //maxDate: toDate,
+            showAnim: 'slideDown',
+            showButtonPanel: false,
+            showWeek: true,
+            firstDay: 1,
+            stepMonths: 0,
+            //showOn: "button",
+            buttonImage: "../Images/delete.gif",
+            buttonImageOnly: true,
+            buttonText: "Select date",
+           onSelect: function (selectedDate) {
+                $("#txt_fromDate").datepicker("option", "maxDate", selectedDate);
+            }
+        });
+    });
+
+
+            $(function() {
+    $("#txt_fromDate").datepicker({
+        dateFormat: "dd/mm/yy",
+        onSelect: function(dateText, instance) {
+            date = $.datepicker.parseDate(instance.settings.dateFormat, dateText, instance.settings);
+            date.setMonth(date.getMonth() + 12);
+            $("#txt_toDate").datepicker("setDate", date);
+        }
+    });
+    $("#txt_toDate").datepicker({
+        dateFormat: "dd/mm/yy"
+    });
+});
+
+

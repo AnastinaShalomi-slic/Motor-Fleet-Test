@@ -1,0 +1,10 @@
+select t.*, t.rowid from FLEET.COVER_NOTE t
+order by t.fdat desc;
+
+
+WHERE t.FDAT IN ((SELECT MAX(FDAT)
+                     FROM FLEET.COVER_NOTE
+                    WHERE TRIM(FDVNO1) = TRIM('KS')
+                      AND TRIM(FDVNO2) = TRIM('2108')))
+   AND TRIM(FDVNO1) = TRIM('KS')
+   AND TRIM(FDVNO2) = TRIM('2108')

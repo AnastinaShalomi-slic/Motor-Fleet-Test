@@ -1,0 +1,24 @@
+select 
+CN.FDREFNO, CN.PLACE, FC.FDSTAT, FC.FDNAME, FC.FDADD1, FC.FDADD2, FC.FDADD3, FC.FDADD4,
+CN.FDTYPE, CN.DAYS, CN.TIME, to_char(CN.FDAT,'yyyy/mm/dd') as temp_FDAT, CN.FDAT, cn.make, cn.chas, cn.hpow, cn.used,
+cn.rcc, cn.tr,cn.flood, cn.polno, cn.val, cn.pvid, cn.pvrg, cn.eepf,
+cn.pprm, cn.pprop,cn.psltax, cn.pltax, cn.psdtax, cn.PTRAN, cn.INSPECT
+from  FLEET.COVER_NOTE cn
+inner join FLEET.MFCLIENT  fc
+on cn.fdclid = fc.fdclid
+and cn.fdloc = fc.fdsuff
+where CN.FDAT 
+in ((select MAX(FDAT) from FLEET.COVER_NOTE Where trim(FDVNO1)=trim('KS')
+and trim(FDVNO2)=trim('2108'))) 
+AND trim(FDVNO1)=trim('KS')
+and trim(FDVNO2)=trim('2108')
+
+LO 4952 
+CAT 1142
+KS 3202 TEST
+
+select * from  FLEET.COVER_NOTE
+order by fdat desc
+select * from GENPAY.BRANCH Where  BRCOD = "& brcode &"  "
+
+select * from  FLEET.MFCLIENT Where FDCLID='"& mpclid &"' and FDSUFF="& mploc &"

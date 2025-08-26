@@ -1,0 +1,699 @@
+﻿using System;
+using System.Configuration;
+using System.Data.Odbc;
+
+/// <summary>
+/// Summary description for ULCustomer
+/// </summary>
+public class ULCustomer
+{
+   // OracleConnection conn = new OracleConnection(ConfigurationManager.ConnectionStrings["DBConString"].ConnectionString);
+    //OdbcConnection oconn = new OdbcConnection(ConfigurationManager.AppSettings["IBM_DB2"]);
+    OdbcConnection oconn = new OdbcConnection(ConfigurationManager.AppSettings["DB2"]);
+
+    public ULCustomer()
+    {
+        //
+        // TODO: Add constructor logic here
+        //
+
+    }
+
+    public bool RegisterCustomer(string userName, string password, string title, string firstName, string lastname, string otherNames,
+                                 string nic, int dateOfBirth, string gender, string addrss1, string addrss2, string addrss3, string addrss4,
+                                 string city, string postalCode, string country, string email, string mobileNo, string homeNo, string ofcNo)
+    {
+        bool returnValue = false;
+        //if (userName.Length <= 50 && password.Length <= 50) -- All validations done seperately
+       // {            
+            try{
+                oconn.Open();
+                string registerUser = "Insert into COOPWEB.webusers(USR_SEQ_ID, USERNAME, PASWORD, FIRST_NAME, LAST_NAME, OTHER_NAMES, TITLE, NIC_NO, DATE_OF_BIRTH, GENDER," +
+                                                                " ADDRESS1, ADDRESS2, ADDRESS3, ADDRESS4, TOWN_CITY, POSTAL_CODE, COUNTRY, EMAIL, MOBILE_NUMBER," +
+                                                                " HOME_NUMBER, OFFICE_NUMBER) values (NEXTVAL FOR COOPWEB.WEB01, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                    using (OdbcCommand com = new OdbcCommand(registerUser, oconn))
+                    {
+                        com.Parameters.Add("@username", OdbcType.VarChar);
+                        com.Parameters["@username"].Value = userName;
+
+                        com.Parameters.Add("@password", OdbcType.VarChar);
+                        com.Parameters["@password"].Value = Hash.Hash.GetHash(password, Hash.Hash.HashType.SHA512);//Hasher.HashString(password.Trim());
+
+                        com.Parameters.Add("@firstname", OdbcType.VarChar);
+                        com.Parameters["@firstname"].Value = firstName;
+
+                        com.Parameters.Add("@lastname", OdbcType.VarChar);
+                        com.Parameters["@lastname"].Value = lastname;
+
+                        com.Parameters.Add("@othernames", OdbcType.VarChar);
+                        com.Parameters["@othernames"].Value = otherNames;
+
+                        com.Parameters.Add("@title", OdbcType.VarChar);
+                        com.Parameters["@title"].Value = title;
+
+                        com.Parameters.Add("@nicNo", OdbcType.VarChar);
+                        com.Parameters["@nicNo"].Value = nic.ToUpper();
+
+                        com.Parameters.Add("@dateofbirth", OdbcType.Decimal);
+                        com.Parameters["@dateofbirth"].Value = dateOfBirth;
+
+                        com.Parameters.Add("@gender", OdbcType.VarChar);
+                        com.Parameters["@gender"].Value = gender;
+
+                        com.Parameters.Add("@address1", OdbcType.VarChar);
+                        com.Parameters["@address1"].Value = addrss1;
+
+                        com.Parameters.Add("@address2", OdbcType.VarChar);
+                        com.Parameters["@address2"].Value = addrss2;
+
+                        com.Parameters.Add("@address3", OdbcType.VarChar);
+                        com.Parameters["@address3"].Value = addrss3;
+
+                        com.Parameters.Add("@address4", OdbcType.VarChar);
+                        com.Parameters["@address4"].Value = addrss4;
+
+                        com.Parameters.Add("@town", OdbcType.VarChar);
+                        com.Parameters["@town"].Value = city;
+
+                        com.Parameters.Add("@postCode", OdbcType.VarChar);
+                        com.Parameters["@postCode"].Value = postalCode;
+
+                        com.Parameters.Add("@country", OdbcType.VarChar);
+                        com.Parameters["@country"].Value = country;
+
+                        com.Parameters.Add("@email", OdbcType.VarChar);
+                        com.Parameters["@email"].Value = email;
+
+                        com.Parameters.Add("@mobileNo", OdbcType.VarChar);
+                        com.Parameters["@mobileNo"].Value = mobileNo;
+
+                        com.Parameters.Add("@homeNo", OdbcType.VarChar);
+                        com.Parameters["@homeNo"].Value = homeNo;
+
+                        com.Parameters.Add("@officeNo", OdbcType.VarChar);
+                        com.Parameters["@officeNo"].Value = ofcNo;
+
+                        int count = com.ExecuteNonQuery();
+
+                        if (count > 0)
+                        {
+
+                            string setRegisterLink = "Insert into COOPWEB.WEBUSERS_PREREG(USERNAME, REG_CODE)values (?, ?)";
+
+                            using (OdbcCommand com2 = new OdbcCommand(setRegisterLink, oconn))
+                            {
+                                string hashedUser = Hash.Hash.GetHash(userName.Trim(), Hash.Hash.HashType.SHA512);//Hasher.HashString(username.Trim());
+
+                                com2.Parameters.Add("@username", OdbcType.VarChar);
+                                com2.Parameters["@username"].Value = userName;
+
+                                com2.Parameters.Add("@regcode", OdbcType.VarChar);
+                                com2.Parameters["@regcode"].Value = hashedUser;
+
+                                int count2 = com2.ExecuteNonQuery();
+
+                                if (count2 > 0)
+                                {
+                                    string subject = "SLIC - Registration service";
+                                    string content = "Please click on following link to complete your registration." +
+                                                     "<br/><br/><a href=\"http://www.srilankainsurance.lk/PensionersLoan/ConfirmRegister.aspx?regtokn=" + hashedUser +
+                                                     "\"> http://www.srilankainsurance.lk/PensionersLoan/ConfirmRegister.aspx?regtokn=" + hashedUser + "</a><br/><br/><div style='font-size:10pt; color:#CCCCCC;'>This is a system generated email, please do not reply.</div>";
+
+                            returnValue = true;//utils.sendEmail(email, subject, content);
+
+                                }
+                            }                            
+                        }
+                    }                 
+                                   
+            }
+            catch
+            {
+                // trans.Rollback();
+                returnValue = false;
+            }
+            finally
+            {
+                if (oconn != null) oconn.Close();
+            }        
+
+        return returnValue;
+    }
+
+    public bool ValidateLogin(string userName, string password, int failedLoginCount)
+    {
+        bool returnValue = false;
+
+        if (userName.Length <= 50 && password.Length <= 15)
+        {
+            //OracleCommand cmd = conn.CreateCommand();
+            // OracleTransaction trans = conn.BeginTransaction();
+            //  cmd.Transaction = trans;
+
+            try
+            {
+                oconn.Open();
+                string getUser = "select count(*) from COOPWEB.WEBUSERS where USERNAME = ? and PASWORD = ? and ACTIVE_FLAG = 'Y' and USERTYPE = 2";
+
+                using (OdbcCommand com = new OdbcCommand(getUser, oconn))
+                {
+                    com.Parameters.Add("@username", OdbcType.VarChar);
+                    com.Parameters.Add("@password", OdbcType.VarChar);
+
+                    com.Parameters["@username"].Value = userName;
+                    com.Parameters["@password"].Value = Hash.Hash.GetHash(password, Hash.Hash.HashType.SHA512);
+
+                    //com.Parameters.AddWithValue("", user_id); 
+                    //com.Parameters.AddWithValue("", passwrd); 
+                                        
+                    int count = Convert.ToInt32(com.ExecuteScalar());               
+                    
+                    if (count > 0)
+                    {
+                        string setLoginDate = "Update COOPWEB.WEBUSERS set LAST_LOGIN_DATE = (sysdate) where USERNAME = ?";
+
+                        using (OdbcCommand com2 = new OdbcCommand(setLoginDate, oconn))
+                        {
+                            com2.Parameters.Add("@username", OdbcType.VarChar);
+                            com2.Parameters["@username"].Value = userName;
+
+                            int count1 = com2.ExecuteNonQuery();
+
+                            if (count1 > 0)
+                            {
+                                returnValue = true;
+                            }
+                        }
+
+                        if (failedLoginCount > 0)
+                        {
+                            string setLoginCountZero = "Update COOPWEB.WEBUSERS set FAILED_LOGIN_COUNT = 0 where USERNAME = ?";
+
+                            using (OdbcCommand com3 = new OdbcCommand(setLoginCountZero, oconn))
+                            {
+                                com3.Parameters.Add("@username", OdbcType.VarChar);
+                                com3.Parameters["@username"].Value = userName;
+
+                                int count2 = com3.ExecuteNonQuery();
+
+                                if (count2 < 0)
+                                {
+                                    // should log error - Failed login count not updated for some reason.
+                                }
+                            }                            
+                        }
+                    }
+                    else
+                    {
+                        returnValue = false;
+                        string setLoginCount = "Update COOPWEB.WEBUSERS set FAILED_LOGIN_COUNT = (nvl(failed_login_count, 0) + 1), LAST_FAILED_DATE = (sysdate) where USERNAME = ? and ACTIVE_FLAG = 'Y' and USERTYPE = 2";
+
+                        using (OdbcCommand com4 = new OdbcCommand(setLoginCount, oconn))
+                        {
+                            com4.Parameters.Add("@username", OdbcType.VarChar);
+                            com4.Parameters["@username"].Value = userName;
+
+                            int count3 = com4.ExecuteNonQuery();
+
+                            if (count3 < 0)
+                            {
+                                // should log error - Failed login count not updated for some reason.
+                            }
+                        }  
+                        
+                    }
+
+
+                    if (true)
+                        {
+                            string deleteTempRecord = "Delete from COOPWEB.WEBUSER_PWRESET where UPPER(USERNAME) = UPPER(?)";
+
+                            using (OdbcCommand com13 = new OdbcCommand(deleteTempRecord, oconn))
+                            {
+                                com13.Parameters.Add("@token", OdbcType.VarChar);
+                                com13.Parameters["@token"].Value = userName.Trim();
+
+                                int count2 = com13.ExecuteNonQuery();
+                                if (count2 > 0)
+                                {
+                                    // trans.Commit();
+                                    returnValue = true;
+                                }
+                            }                    
+
+                        }
+
+                }                
+
+                //  trans.Commit();
+
+            }
+            catch (OdbcException ex)
+            {
+                // trans.Rollback();
+                returnValue = false;// Log your error
+            }
+            finally
+            {
+                if (oconn != null) oconn.Close();
+            }
+        }
+        else
+        {
+            // Log error - user name not alpha-numeric or 
+            // username or password exceed the length limit!
+        }
+
+        return returnValue;
+    }
+
+   
+
+    public bool PasswordRecoverySet(string fieldValue, string fieldType)
+    {
+        bool returnValue = false;
+        string userName = "";
+        string email = "";
+
+        try
+        {
+            oconn.Open();
+
+            string getUsername = "";
+
+            if (fieldType == "UN")
+            {
+                getUsername = "Select USERNAME, EMAIL from COOPWEB.WEBUSERS where UPPER(USERNAME) = UPPER(?) and ACTIVE_FLAG = 'Y'";
+            }
+            else if (fieldType == "EM")
+            {
+                getUsername = "Select USERNAME, EMAIL from COOPWEB.WEBUSERS where EMAIL = ? and ACTIVE_FLAG = 'Y'";
+            }
+
+            using (OdbcCommand com1 = new OdbcCommand(getUsername, oconn))
+            {
+                com1.Parameters.Add("@fieldVal", OdbcType.VarChar);
+                com1.Parameters["@fieldVal"].Value = fieldValue;
+
+                OdbcDataReader usernameReader = (OdbcDataReader)com1.ExecuteReader();
+
+                if (usernameReader.HasRows)
+                {
+                    while (usernameReader.Read())
+                    {
+                        if (!usernameReader.IsDBNull(0))
+                        {
+                            userName = usernameReader.GetString(0);
+                        }
+                        if (!usernameReader.IsDBNull(1))
+                        {
+                            email = usernameReader.GetString(1);
+                        }
+                    }
+                    usernameReader.Close();
+                }
+
+                string deleteExisting = "Delete from COOPWEB.WEBUSER_PWRESET where (UPPER(USERNAME) = ?)";
+
+                using (OdbcCommand com122 = new OdbcCommand(deleteExisting, oconn))
+                {
+                    com122.Parameters.Add("@username", OdbcType.VarChar);
+                    com122.Parameters["@username"].Value = userName.ToUpper();
+
+                    int count122 = com122.ExecuteNonQuery();
+                }
+
+                string setPassRecovery = "Insert into COOPWEB.WEBUSER_PWRESET(USERNAME, REQ_DATE, RESET_CODE)values (?, (select current timestamp from COOPWEB.date_helper), ?)";
+
+                using (OdbcCommand com2 = new OdbcCommand(setPassRecovery, oconn))
+                {
+                    string hashedUser = Hash.Hash.GetHash(userName.Trim(), Hash.Hash.HashType.SHA512);//Hasher.HashString(username.Trim());
+
+                    com2.Parameters.Add("@username", OdbcType.VarChar);
+                    com2.Parameters["@username"].Value = userName;
+
+                    com2.Parameters.Add("@resetcode", OdbcType.VarChar);
+                    com2.Parameters["@resetcode"].Value = hashedUser;
+
+                    int count = com2.ExecuteNonQuery();
+
+                    if (count > 0)
+                    {
+
+                       // Db_Email dbe = new Db_Email();
+
+                        //returnValue = dbe.send_html_email(email, "SLIC Global emergency assistance - Password Recovery service", "Password recovery", content);
+                        string subject = "SLIC - Password Recovery service";
+                        string content = "Dear " + userName + ", <br/><br/> Please click on following link to reset your password." +
+                                         "<br/><br/><a href=\"http://www.srilankainsurance.lk/PensionersLoan/ResetPassword.aspx?token=" + hashedUser +
+                                         "\"> http://www.srilankainsurance.lk/PensionersLoan/ResetPassword.aspx?token=" + hashedUser + "</a><br/><br/><div style='font-size:10pt; color:#AAAAAA;'>This is a system generated email, please do not reply.</div>";
+
+                        //returnValue = dbe.send_html_email(email, subject, "Please copy the url and navigate to it using a browser.      http://www.srilankainsurance.lk/PensionersLoan/ResetPassword.aspx?token=" + hashedUser, content);
+                        //returnValue = utils.sendEmail(email, subject, content);
+
+                    }
+                }
+            }
+            
+        }
+        catch (Exception e)
+        {
+            returnValue = false;
+            ///log logger = new log();
+            //logger.write_log("Failed at RegisterCustomer: " + e.ToString().Substring(0, 200));
+        }
+        finally
+        {
+            if (oconn != null) oconn.Close();
+        }
+
+        return returnValue;
+    }
+
+    public bool isValidToken(string token)
+    {
+        bool returnValue = false;
+        try
+        {
+            oconn.Open();
+            string getValidToken = "select count(*) from COOPWEB.WEBUSER_PWRESET where RESET_CODE = ?";
+
+            using (OdbcCommand com = new OdbcCommand(getValidToken, oconn))
+            {
+                com.Parameters.Add("@token", OdbcType.VarChar);
+                com.Parameters["@token"].Value = token.Trim();
+
+                int count = Convert.ToInt32(com.ExecuteScalar());
+
+                if (count > 0)
+                {
+                    returnValue = true;
+                }
+            }       
+           
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+            if (oconn != null) oconn.Close();
+        }
+
+        return returnValue;
+    }
+
+    public bool isValidRegToken(string token)
+    {
+        bool returnValue = false;
+        try
+        {
+            oconn.Open();
+            string getValidToken = "select count(*) from COOPWEB.WEBUSERS_PREREG where REG_CODE = ?";
+
+            using (OdbcCommand com = new OdbcCommand(getValidToken, oconn))
+            {
+                com.Parameters.Add("@token", OdbcType.VarChar);
+                com.Parameters["@token"].Value = token.Trim();
+
+                int count = Convert.ToInt32(com.ExecuteScalar());
+
+                if (count > 0)
+                {
+                    returnValue = true;
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+            if (oconn != null) oconn.Close();
+        }
+
+        return returnValue;
+    }
+
+    public bool ResetPassword(string token, string password)
+    {
+        bool returnValue = false;
+
+        //conn.Open();
+        //OracleCommand cmd = conn.CreateCommand();
+        //OracleTransaction trans = conn.BeginTransaction();
+        //cmd.Transaction = trans;
+
+        try
+        {
+            oconn.Open();
+            string username = "";
+            string getUsername = "Select USERNAME from COOPWEB.WEBUSER_PWRESET where RESET_CODE = ?";
+
+            using (OdbcCommand com1 = new OdbcCommand(getUsername, oconn))
+            {
+                com1.Parameters.Add("@token", OdbcType.VarChar);
+                com1.Parameters["@token"].Value = token.Trim();
+
+                OdbcDataReader usernameReader = (OdbcDataReader)com1.ExecuteReader();
+
+                if (usernameReader.HasRows)
+                {
+                    while (usernameReader.Read())
+                    {
+                        if (!usernameReader.IsDBNull(0))
+                        {
+                            username = usernameReader.GetString(0);
+                        }
+                    }
+                    usernameReader.Close();
+
+                    string setNewPassword = "Update COOPWEB.WEBUSERS set PASWORD = ?, LAST_RESET_DATE = (select current timestamp from COOPWEB.date_helper), FAILED_LOGIN_COUNT = 0   where USERNAME = ?";
+
+                    using (OdbcCommand com2 = new OdbcCommand(setNewPassword, oconn))
+                    {
+                        com2.Parameters.Add("@pass", OdbcType.VarChar);
+                        com2.Parameters["@pass"].Value = Hash.Hash.GetHash(password.Trim(), Hash.Hash.HashType.SHA512);//Hasher.HashString(password.Trim());
+
+                        com2.Parameters.Add("@username", OdbcType.VarChar);
+                        com2.Parameters["@username"].Value = username.Trim();
+
+
+                        int count1 = com2.ExecuteNonQuery();
+
+                        if (count1 > 0)
+                        {
+                            string deleteTempRecord = "Delete from COOPWEB.WEBUSER_PWRESET where RESET_CODE = ?";
+
+                            using (OdbcCommand com3 = new OdbcCommand(deleteTempRecord, oconn))
+                            {
+                                com3.Parameters.Add("@token", OdbcType.VarChar);
+                                com3.Parameters["@token"].Value = token.Trim();
+
+                                int count2 = com3.ExecuteNonQuery();
+                                if (count2 > 0)
+                                {
+                                    // trans.Commit();
+                                    returnValue = true;
+                                }
+                            }                    
+
+                        }
+                    }
+                }
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            // trans.Rollback();
+            returnValue = false;
+        }
+        finally
+        {
+            if (oconn != null) oconn.Close();
+        }
+
+        return returnValue;
+    }
+
+    public bool ConfirmRegistration(string token)
+    {
+        bool returnValue = false;
+
+        //conn.Open();
+        //OracleCommand cmd = conn.CreateCommand();
+        //OracleTransaction trans = conn.BeginTransaction();
+        //cmd.Transaction = trans;
+
+        try
+        {
+            oconn.Open();
+            string username = "";
+            string getUsername = "Select USERNAME from COOPWEB.WEBUSERS_PREREG where REG_CODE = ?";
+
+            using (OdbcCommand com1 = new OdbcCommand(getUsername, oconn))
+            {
+                com1.Parameters.Add("@token", OdbcType.VarChar);
+                com1.Parameters["@token"].Value = token.Trim();
+
+                OdbcDataReader usernameReader = (OdbcDataReader)com1.ExecuteReader();
+
+                if (usernameReader.HasRows)
+                {
+                    while (usernameReader.Read())
+                    {
+                        if (!usernameReader.IsDBNull(0))
+                        {
+                            username = usernameReader.GetString(0);
+                        }
+                    }
+                    usernameReader.Close();
+
+                    string setMemberActive = "Update COOPWEB.WEBUSERS set ACTIVE_FLAG = 'Y', LAST_UPD_DATE = (select current timestamp from COOPWEB.date_helper) where USERNAME = ?";
+
+                    using (OdbcCommand com2 = new OdbcCommand(setMemberActive, oconn))
+                    {
+                        com2.Parameters.Add("@username", OdbcType.VarChar);
+                        com2.Parameters["@username"].Value = username.Trim();
+                        
+                        int count1 = com2.ExecuteNonQuery();
+
+                        if (count1 > 0)
+                        {
+                            string deleteTempRecord = "Delete from COOPWEB.WEBUSERS_PREREG where REG_CODE = ?";
+
+                            using (OdbcCommand com3 = new OdbcCommand(deleteTempRecord, oconn))
+                            {
+                                com3.Parameters.Add("@token", OdbcType.VarChar);
+                                com3.Parameters["@token"].Value = token.Trim();
+
+                                int count2 = com3.ExecuteNonQuery();
+                                if (count2 > 0)
+                                {
+                                    // trans.Commit();
+                                    returnValue = true;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            // trans.Rollback();
+            returnValue = false;
+        }
+        finally
+        {
+            if (oconn != null) oconn.Close();
+        }
+
+        return returnValue;
+    }
+
+    public bool SendRegNotification(string username)
+    {
+        bool returnValue = false;
+
+        try
+        {
+            string subject = "Thank you for registering for SLIC Business Portal";
+            string content = "We thank you and welcome you to the SLIC Business Portal!" +
+                             "<br/><br/> This site provides you with the access to Pensioners' Loan system." +
+                             "<br/><br/> Click <a href=\"http://www.srilankainsurance.lk/PensionersLoan/Authorized/ProposalEntry.aspx\" target='_blank'>here</a> to visit our site." +
+                             "<br/><br/><br/> SLIC-Team.<br/><br/><div style='font-size:10pt; color:#CCCCCC;'>This is a system generated email, please do not reply.</div>";
+
+            //utils.sendEmail(username, subject, content);
+            returnValue = true;
+
+            //logging of email sent - to do
+        }
+        catch
+        {
+            returnValue = false;
+        } 
+        return returnValue;
+    }
+
+    public bool ChangePassword(string username, string oldPassword, string newPassword)
+    {
+        bool returnValue = false;
+        try
+        {
+            oconn.Open();
+            string updatePassword = "Update COOPWEB.WEBUSERS set PASWORD = ? where USERNAME = ? and PASWORD = ?";
+
+            using (OdbcCommand com1 = new OdbcCommand(updatePassword, oconn))
+            {
+                com1.Parameters.Add("@newPasswd", OdbcType.VarChar);
+                com1.Parameters["@newPasswd"].Value = Hash.Hash.GetHash(newPassword.Trim(), Hash.Hash.HashType.SHA512);//Hasher.HashString(newPassword.Trim());
+
+                com1.Parameters.Add("@username", OdbcType.VarChar);
+                com1.Parameters["@username"].Value = username.Trim();
+
+                com1.Parameters.Add("@oldPasswd", OdbcType.VarChar);
+                com1.Parameters["@oldPasswd"].Value = Hash.Hash.GetHash(oldPassword.Trim(), Hash.Hash.HashType.SHA512);//Hasher.HashString(oldPassword.Trim());
+                                
+                int count = com1.ExecuteNonQuery();
+
+                if (count > 0)
+                {
+                    returnValue = true;
+                }
+
+            }       
+
+        }
+        catch (Exception ex)
+        {
+            // Log your error
+            returnValue = false;
+        }
+        finally
+        {
+            if (oconn != null) oconn.Close();
+        }
+
+        return returnValue;
+    }
+
+    public int GetFailedLoginCount(string username)
+    {
+        int failedLoginCount = -1;
+
+        try
+        {
+            oconn.Open();
+            string getFailedCount = "Select COALESCE(FAILED_LOGIN_COUNT,0) from COOPWEB.WEBUSERS where USERNAME = ?";
+
+            using (OdbcCommand com = new OdbcCommand(getFailedCount, oconn))
+            {
+                com.Parameters.Add("@username", OdbcType.VarChar);
+                com.Parameters["@username"].Value = username;
+
+                int count = Convert.ToInt32(com.ExecuteScalar());
+
+                failedLoginCount = (int)count;
+            }
+            
+        }
+        catch
+        {
+            failedLoginCount = -1;
+        }
+        finally
+        {
+            if (oconn != null) oconn.Close();
+        }
+
+        return failedLoginCount;
+    }
+}

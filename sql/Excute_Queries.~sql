@@ -1,0 +1,119 @@
+
+drop SEQUENCE QUOTATION.banc_id_seq 
+CREATE SEQUENCE QUOTATION.banc_id_seq
+    INCREMENT BY 1
+    START WITH 1
+    MINVALUE 1
+    MAXVALUE 999999999999999999999999999
+    CACHE 20;
+
+CREATE TABLE QUOTATION.BANK_DETAILS
+  (BANK_CODE VARCHAR2(12 BYTE) NOT NULL ENABLE, 
+  BANK_NAME VARCHAR2(60 BYTE), 
+  CREATED_BY VARCHAR2(10 BYTE), 
+  FLAG VARCHAR2(1 BYTE), 
+  CREATED_ON DATE,
+  PRIMARY KEY(BANK_CODE)  
+   ); 
+
+
+INSERT INTO QUOTATION.BANK_DETAILS VALUES ('BOC','BANK OF CEYLON','9641','A',SYSDATE);
+
+
+
+
+DROP TABLE QUOTATION.BANK_REQ_ENTRY_DETAILS
+CREATE TABLE QUOTATION.BANK_REQ_ENTRY_DETAILS
+  (
+  REQ_ID VARCHAR2(12 BYTE) NOT NULL ENABLE, 
+  BANK_CODE VARCHAR2(12 BYTE),
+  V_TYPE VARCHAR2(60 BYTE),
+  YOM NUMBER(4),
+  SUM_INSU NUMBER(16,2),
+  V_MAKE NUMBER(4),
+  V_MODEL NUMBER(4),
+  PURPOSE VARCHAR2(12 BYTE), 
+  V_REG_NO VARCHAR2(20 BYTE), 
+  CUS_NAME VARCHAR2(20 BYTE), 
+  CUS_PHONE VARCHAR2(16 BYTE), 
+  V_FUEL VARCHAR2(20 BYTE), 
+  ENTERED_BY VARCHAR2(10 BYTE), 
+  ENTERED_ON DATE,
+  EMAIL VARCHAR2(60 BYTE),
+  QUO_NO  VARCHAR2(20 BYTE),  
+  FLAG VARCHAR2(2 BYTE), 
+  
+  PRIMARY KEY(REQ_ID), 
+  CONSTRAINT FK_BANK_CODE
+  FOREIGN KEY (BANK_CODE)
+  REFERENCES QUOTATION.BANK_DETAILS(BANK_CODE)
+   ); 
+  
+  CREATE TABLE QUOTATION.BANK_QUOTATION_DOCUMENTS
+(
+  DOCUMENT_ID     VARCHAR2(20) not null,
+  REQ_ID          VARCHAR2(20) not null,
+  DATE_TIME       DATE default sysdate,
+  ACTIVE_FLAG      VARCHAR2(2) default 'Y' not null,
+  DOCUMENT_URL    VARCHAR2(200) not null,
+  UPLOADED_IP     VARCHAR2(20),
+  PRIMARY KEY(DOCUMENT_ID), 
+  CONSTRAINT FK_BANK_CODE
+  FOREIGN KEY (REQ_ID)
+  REFERENCES QUOTATION.BANK_REQ_ENTRY_DETAILS(REQ_ID)
+)
+  
+  
+  insert into SLIC_CNOTE.VH_MAKES values ('Dump',0); 
+  insert into SLIC_CNOTE.VH_MODEL values(0,0,'Dump1');
+  
+  ALTER TABLE QUOTATION.BANK_REQ_ENTRY_DETAILS 
+  ADD QUO_NO VARCHAR2(20 BYTE);
+   
+   select REQ_ID from QUOTATION.BANK_REQ_ENTRY_DETAILS 
+   where REQ_ID like '%B%' AND ROWNUM <= 10 order by ENTERED_ON desc
+   
+   select t.*, t.rowid from QUOTATION.BANK_REQ_ENTRY_DETAILS t
+   
+  INSERT INTO QUOTATION.BANK_REQ_ENTRY_DETAILS(
+   REQ_ID, BANK_CODE, V_TYPE, YOM, SUM_INSU, V_MAKE, V_MODEL, PURPOSE, V_REG_NO, CUS_NAME, CUS_PHONE, V_FUEL, ENTERED_BY, ENTERED_ON, FLAG) VALUES () 
+   
+   select bd.REQ_ID, bd.BANK_CODE, bd.V_TYPE, bd.YOM, bd.SUM_INSU, bd.V_MAKE, bd.V_MODEL, bd.PURPOSE, bd.V_REG_NO, bd.CUS_NAME,
+   bd.CUS_PHONE, bd.V_FUEL, bd.ENTERED_BY, to_char(bd.ENTERED_ON,'dd/mm/yyyy') as ENTERED_ON , bd.FLAG, mk.vh_make, md.model_name,bd.email
+   from QUOTATION.BANK_REQ_ENTRY_DETAILS bd
+   inner join SLIC_CNOTE.VH_MAKES mk
+   on mk.make_id = bd.v_make
+   inner join  SLIC_CNOTE.VH_MODEL md
+   on bd.v_model = md.model_id
+   
+   where bd.flag !='Z'
+   --and bd.req_id=''
+   --and bd.flag =''
+   and( to_date(to_char(bd.entered_on,'dd/MM/yyyy'),'dd/MM/yyyy') > = to_date('29/04/2020','dd/MM/yyyy') 
+    and to_date(to_char(bd.entered_on,'dd/MM/yyyy'),'dd/MM/yyyy') <= to_date('29/04/2020','dd/MM/yyyy'))
+   
+   and( bd.entered_on > = to_date('" + fromDate + "','dd/MM/yyyy')  and bd.entered_on <= to_date('" + toDate + "','dd/MM/yyyy')) 
+   
+   order by bd.req_id asc
+   
+   select * from SLIC_CNOTE.VH_MAKES
+   --insert into SLIC_CNOTE.VH_MAKES values ('Dump',0);
+   SELECT * FROM SLIC_CNOTE.VH_MODEL WHERE MAKE_ID = '1' ORDER BY MODEL_NAME ASC
+   --insert into SLIC_CNOTE.VH_MODEL values(0,0,'Dump1');
+   
+   
+   
+   select QUOTATION.banc_id_seq.nextval from dual
+   select * from QUOTATION.QUOTATION_DOCUMENTS
+   SELECT * FROM SLICCOMMON.EMAIL_ADDRESS_DATA bre 
+   WHERE bre.e_mail_address=:txtCCemailIds AND (bre.motor_quotation = 'Y' OR bre.motor_quotation = 'YS'
+   SELECT bre.name, bre.epf FROM SLICCOMMON.EMAIL_ADDRESS_DATA
+   
+   SELECT  * --bre.name, bre.epf 
+   FROM SLICCOMMON.EMAIL_ADDRESS_DATA bre 
+   WHERE bre.epf IS NOT NULL AND bre.motor_quotation = 'Y' ORDER BY bre.epf ASC
+   
+   insert into BGENERAL.NODESTABLE 
+   values (570,'Diesel / Semi Tax Reports','No',272,'/SessionTrans/SessionManager.asp?fileindex=168');
+   
+   

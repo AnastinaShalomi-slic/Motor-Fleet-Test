@@ -1,0 +1,150 @@
+CREATE OR REPLACE PROCEDURE SLICCOMMON.PROC_AML_ONBOARD_LOG(sysName in varchar2, brCode in varchar2,
+ nicNumber in varchar2, passportNumber in varchar2, polNumber in varchar2, phoneNumber in varchar2, responseVal out varchar2
+)
+AS
+
+  CURSOR email_add
+    IS
+    select E_MAIL_ADDRESS from SLICCOMMON.EMAIL_ADDRESS_DATA where AML_LISTED='Y';
+
+   countVal number :=0;
+   p_html_msg varchar2(500);
+
+   BEGIN        
+
+   if(nicNumber is not null and passportNumber is null)  then
+
+   SELECT count(*) into countVal FROM SLICCOMMON.TERRORISTLIST aml where upper(trim(aml.national_identification)) = upper(trim(nicNumber));
+
+
+   if(countVal > 0)  then
+   responseVal :='AML Listed Person'; ---threat
+
+   FOR r_aml IN (
+      SELECT
+       aml.national_identification, aml.passport_no, aml.tr_name, aml.refno
+       FROM  SLICCOMMON.TERRORISTLIST aml
+       where upper(trim(aml.national_identification)) = upper(trim(nicNumber))
+    )
+  LOOP
+    
+
+     insert into SLICCOMMON.AML_ONBOARD_LOG(
+     SYSTEM_NAME,
+     BRANCH,
+     NIC,
+     PASSPORT,
+     TR_NAME,
+     CONTACT_NO,
+     AML_REFNO,
+     CREATED_DATE,
+     CREATED_TIME)
+     VALUES
+     (
+     sysName,
+     brCode,
+     r_aml.national_identification,
+     r_aml.passport_no,
+     r_aml.tr_name,
+     phoneNumber,
+     r_aml.refno,
+     to_date(to_char(sysdate,'DD/MM/YYYY'),'DD/MM/YYYY'),
+     to_char(sysdate,'hh24:mi:ss')
+     );
+
+     commit;
+   --email send section ------------->>
+     FOR r_email IN email_add
+     LOOP
+    
+
+  p_html_msg :='Dear Sir / Madam,<br/><br/> AML listed customer attempt.<br/><br/>System: '||sysName||'<br/>Branch: '||brCode||
+  '<br/>NIC No: '||r_aml.national_identification||'<br/>Passport: '||r_aml.passport_no||'<br/>Name: '||r_aml.tr_name||'<br/>Policy Number: '||polNumber||
+  '<br/>Contact Number: '||phoneNumber||'<br/>AML Reference: '||r_aml.refno||
+  '<br/>Date: '||to_date(to_char(sysdate,'DD/MM/YYYY'),'DD/MM/YYYY')||'<br/>Time	:'||to_char(sysdate,'hh24:mi:ss')||
+  '<br/><br/><br/>Thank You.';
+
+     SLIC_NET.SEND_HTML_EMAIL_CC( r_email.E_MAIL_ADDRESS,'','','AMLrisk@srilankainsurance.com','Anti Money Laundering Onboard Customer Screening Alert','Text msg',p_html_msg);
+     EXIT WHEN email_add%notfound;
+     END LOOP;
+   --end--------------->>>>>>>>>>>
+
+  END LOOP;
+   else
+     responseVal :='Not a AML Listed Person'; ---no threat
+   end if;
+   ---nic only check end----------------------------
+   
+  --check with passport------------------------------
+  elsif(nicNumber is null and passportNumber is not null)  then
+
+   SELECT count(*) into countVal FROM SLICCOMMON.TERRORISTLIST aml where upper(trim(aml.passport_no)) = upper(trim(passportNumber));
+
+
+   if(countVal > 0)  then
+   responseVal :='AML Listed Person'; ---threat
+
+   FOR r_aml IN (
+      SELECT
+       aml.national_identification, aml.passport_no, aml.tr_name,aml.refno
+       FROM  SLICCOMMON.TERRORISTLIST aml
+       where upper(trim(aml.passport_no)) = upper(trim(passportNumber))
+    )
+  LOOP
+   
+     insert into SLICCOMMON.AML_ONBOARD_LOG(
+     SYSTEM_NAME,
+     BRANCH,
+     NIC,
+     PASSPORT,
+     TR_NAME,
+     CONTACT_NO,
+     AML_REFNO,
+     CREATED_DATE,
+     CREATED_TIME)
+     VALUES
+     (
+     sysName,
+     brCode,
+     r_aml.national_identification,
+     r_aml.passport_no,
+     r_aml.tr_name,
+     phoneNumber,
+     r_aml.refno,
+     to_date(to_char(sysdate,'DD/MM/YYYY'),'DD/MM/YYYY'),
+     to_char(sysdate,'hh24:mi:ss')
+     );
+
+     commit;
+   --email send section ------------->>
+     FOR r_email IN email_add
+     LOOP
+       
+    p_html_msg :='Dear Sir / Madam,<br/><br/> AML listed customer attempt.<br/><br/>System: '||sysName||'<br/>Branch: '||brCode||
+  '<br/>NIC No: '||r_aml.national_identification||'<br/>Passport: '||r_aml.passport_no||'<br/>Name: '||r_aml.tr_name||'<br/>Policy Number: '||polNumber||
+  '<br/>Contact Number: '||phoneNumber||'<br/>AML Reference: '||r_aml.refno||
+  '<br/>Date: '||to_date(to_char(sysdate,'DD/MM/YYYY'),'DD/MM/YYYY')||'<br/>Time	:'||to_char(sysdate,'hh24:mi:ss')||
+  '<br/><br/><br/>Thank You.';
+
+     SLIC_NET.SEND_HTML_EMAIL_CC( r_email.E_MAIL_ADDRESS,'','','AMLrisk@srilankainsurance.com','Anti Money Laundering Onboard Customer Screening Alert','Text msg',p_html_msg);
+     EXIT WHEN email_add%notfound;
+     END LOOP;
+   --end--------------->>>>>>>>>>>
+
+  END LOOP;
+   else
+     responseVal :='Not a AML Listed Person'; ---no threat
+   end if;
+  ---passport check end---------------------------------------------
+   else
+     responseVal :='xxx';
+   end if;
+
+ EXCEPTION
+    WHEN OTHERS THEN
+      Rollback;
+      raise_application_error(-20001,
+                              'An error was encountered - ' || SQLCODE ||
+                              ' -ERROR- ' || SQLERRM);
+
+ END PROC_AML_ONBOARD_LOG;

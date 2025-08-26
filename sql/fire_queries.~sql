@@ -1,0 +1,459 @@
+﻿drop SEQUENCE QUOTATION.FIRE_DH_ID_SEQ 
+CREATE SEQUENCE QUOTATION.FIRE_DH_ID_SEQ 
+    INCREMENT BY 1
+    START WITH 1
+    MINVALUE 1
+    MAXVALUE 999999999999999999999999999
+    CACHE 20;
+---------------------------------------------------------------------------------------
+DROP TABLE QUOTATION.BANCASU_RATE
+CREATE TABLE QUOTATION.BANCASU_RATE
+ (DEPARTMENT VARCHAR2(3 BYTE) NOT NULL ENABLE, 
+  D_TYPE VARCHAR2(4 BYTE), 
+  BANK VARCHAR2(6 BYTE)  NOT NULL ENABLE, 
+  BANK_CODE VARCHAR2(6 BYTE)  NOT NULL ENABLE,
+  BASIC NUMBER(8,6), 
+  RCC NUMBER(8,6),
+  TR NUMBER(8,6),
+  ADMIN_FEE NUMBER(8,6),
+  POLICY_FEE NUMBER(8,4),
+  EFFECTIVE_DATE DATE,
+  CREATED_ON DATE,
+  CREATED_BY VARCHAR2(12)
+   ); 
+INSERT INTO QUOTATION.BANCASU_RATE VALUES ('F','PD','BOC',0.04,0.03,0.0125,0.35,500,SYSDATE,SYSDATE,USER);
+
+SELECT * FROM QUOTATION.BANCASU_RATE
+---------------------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+DROP TABLE QUOTATION.FIRE_DH_SCHEDULE_CALC
+CREATE TABLE QUOTATION.FIRE_DH_SCHEDULE_CALC
+ (SC_REF_NO VARCHAR2(12 BYTE) NOT NULL ENABLE,
+  SC_POLICY_NO VARCHAR2(16 BYTE), 
+  SC_SUM_INSU NUMBER(16,2),
+  SC_NET_PRE NUMBER(16,2),
+  SC_RCC NUMBER(10,2),
+  SC_TR NUMBER(10,2),
+  SC_ADMIN_FEE NUMBER(10,2),
+  SC_POLICY_FEE NUMBER(10,2),
+  SC_NBT NUMBER(10,2),
+  SC_VAT NUMBER(10,2),
+  SC_TOTAL_PAY NUMBER(16,2),
+  CREATED_ON DATE,
+  CREATED_BY VARCHAR2(12),
+  UPDATED_ON DATE,
+  UPDATED_BY VARCHAR2(12),
+  FLAG VARCHAR2(1 BYTE),
+  PRIMARY KEY (SC_REF_NO)
+   ); 
+
+SELECT * FROM QUOTATION.FIRE_DH_SCHEDULE_CALC
+
+
+---------------------------------------------------------------------------------------
+DROP TABLE QUOTATION.FIRE_DH_SCHEDULE_CALC_HISTORY
+CREATE TABLE QUOTATION.FIRE_DH_SCHEDULE_CALC_HISTORY
+ (SC_REF_NO VARCHAR2(12 BYTE) NOT NULL ENABLE,
+  SC_POLICY_NO VARCHAR2(16 BYTE), 
+  SC_SUM_INSU NUMBER(16,2),
+  SC_NET_PRE NUMBER(16,2),
+  SC_RCC NUMBER(10,2),
+  SC_TR NUMBER(10,2),
+  SC_ADMIN_FEE NUMBER(10,2),
+  SC_POLICY_FEE NUMBER(10,2),
+  SC_NBT NUMBER(10,2),
+  SC_VAT NUMBER(10,2),
+  SC_TOTAL_PAY NUMBER(16,2),
+  CREATED_ON DATE,
+  CREATED_BY VARCHAR2(12),
+  FLAG VARCHAR2(1 BYTE)
+   ); 
+
+SELECT * FROM QUOTATION.FIRE_DH_SCHEDULE_CALC_HISTORY
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+DROP TABLE QUOTATION.FIRE_DH_SCOPE_OF_COVERS
+CREATE TABLE QUOTATION.FIRE_DH_SCOPE_OF_COVERS
+ (SEQ_ID NUMBER(2),
+  DH_SCOPE_WORD VARCHAR2(400 BYTE),
+  ACTIVE VARCHAR2(1 BYTE),
+  PRIMARY KEY (SEQ_ID)
+  );  
+INSERT ALL
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (1,'Fire & Lightning','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (2,'Strike, Riot & Civil Commotion(Up to the Sum Insured)','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (3,'Terrorism (Up to the Sum Insured)','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (4,'Malicious Damage','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (5,'Explosion','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (6,'Cyclone, Storm, Tempest','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (7,'Flood','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (8,'Earthquake with Fire & Shock','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (9,'Natural Disaster (Including Tsunami, Tidal Waves, Volcanic Eruption, Tornadoes due to an atmospheric disturbance, Hurricane, Typhoon, Thunderstorm, Hailstorm, Windstorm Rainstorm due to an atmospheric disturbance so designated by the Meteorological Department subject to exceptions/exclusions mentioned under the Cyclone, Storm and Tempest cover granted under the standard fire policy).','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (10,'Aircraft Damage','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (11,'Impact Damage','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (12,'Bursting or Overflowing of Water Tanks, Apparatus or pipes','Y')
+INTO QUOTATION.FIRE_DH_SCOPE_OF_COVERS VALUES (13,'Electrical Inclusion Clause','Y')
+SELECT * FROM dual;
+SELECT * FROM QUOTATION.FIRE_DH_SCOPE_OF_COVERS
+---------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+DROP TABLE QUOTATION.FIRE_DH_DEDUCTIBLES
+ CREATE TABLE QUOTATION.FIRE_DH_DEDUCTIBLES
+  (SEQ_ID NUMBER(2),
+  DH_MIN_VAL NUMBER(10),
+  DH_MAX_VAL NUMBER(10),
+  DH_OPTION1 VARCHAR2(200 BYTE),
+  DH_OPTION2 VARCHAR2(200 BYTE),
+  DH_OPTION3 VARCHAR2(200 BYTE),
+  DH_OPTION4 VARCHAR2(200 BYTE),
+  ACTIVE VARCHAR2(1 BYTE),
+  PRIMARY KEY (SEQ_ID)
+  );  
+  
+INSERT ALL
+INTO QUOTATION.FIRE_DH_DEDUCTIBLES VALUES (1,1000000,2500000,
+'Srike, Riot & Civil Commotion - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'Terrorism  - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'All Natural Perils including Cyclone/Strom/Tempest/Flood & Earthquake - 10% with a minimum of Rs. 2,500/-  on each & every loss.',
+'All other Perils - 10% with a minimum of Rs. 1,000/-  on each & every loss.',
+'Y')
+INTO QUOTATION.FIRE_DH_DEDUCTIBLES VALUES (2,2500000,5000000,
+'Srike, Riot & Civil Commotion - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'Terrorism  - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'All Natural Perils including Cyclone/Strom/Tempest/Flood & Earthquake - 10% with a minimum of Rs. 5,000/-  on each & every loss.',
+'All other Perils - 10% with a minimum of Rs. 1,500/-  on each & every loss.',
+'Y')
+
+INTO QUOTATION.FIRE_DH_DEDUCTIBLES VALUES (3,5000000,7500000,
+'Srike, Riot & Civil Commotion - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'Terrorism  - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'All Natural Perils including Cyclone/Strom/Tempest/Flood & Earthquake - 10% with a minimum of Rs. 5,000/-  on each & every loss.',
+'All other Perils - 10% with a minimum of Rs. 2,000/-  on each & every loss.',
+'Y')
+
+INTO QUOTATION.FIRE_DH_DEDUCTIBLES VALUES (4,7500000,10000000,
+'Srike, Riot & Civil Commotion - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'Terrorism  - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'All Natural Perils including Cyclone/Strom/Tempest/Flood & Earthquake - 10% with a minimum ofRs. 7,500/-  on each & every loss.',
+'All other Perils - 10% with a minimum of Rs. 2,500/-  on each & every loss.',
+'Y')
+
+INTO QUOTATION.FIRE_DH_DEDUCTIBLES VALUES (5,10000000,15000000,
+'Srike, Riot & Civil Commotion - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'Terrorism  - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'All Natural Perils including Cyclone/Strom/Tempest/Flood & Earthquake - 10% with a minimum of Rs. 10,000/-  on each & every loss.',
+'All other Perils - 10% with a minimum of Rs. 3,000/-  on each & every loss.',
+'Y')
+
+INTO QUOTATION.FIRE_DH_DEDUCTIBLES VALUES (6,15000000,20000000,
+'Srike, Riot & Civil Commotion - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'Terrorism  - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'All Natural Perils including Cyclone/Strom/Tempest/Flood & Earthquake - 10% with a minimum of Rs. 12,500/-  on each & every loss',
+'All other Perils - 10% with a minimum of Rs. 4,000/-  on each & every loss.',
+'Y')
+
+INTO QUOTATION.FIRE_DH_DEDUCTIBLES VALUES (7,20000000,25000000,
+'Srike, Riot & Civil Commotion - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'Terrorism  - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'All Natural Perils including Cyclone/Strom/Tempest/Flood & Earthquake - 10% with a minimum of Rs. 15,000/-  on each & every loss.',
+'All other Perils - 10% with a minimum of Rs. 5,000/-  on each & every loss.',
+'Y')
+
+INTO QUOTATION.FIRE_DH_DEDUCTIBLES VALUES (8,25000000,30000000,
+'Srike, Riot & Civil Commotion - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'Terrorism  - 10 % but a maximum of Rs.100,000.00 on Each and Every Loss.',
+'All Natural Perils including Cyclone/Strom/Tempest/Flood & Earthquake - 10% with a minimum of Rs. 20,000/-  on each & every loss.',
+'All other Perils - 10% with a minimum of Rs. 7,500/-  on each & every loss.',
+'Y')
+SELECT * FROM dual;
+  
+  SELECT * FROM QUOTATION.FIRE_DH_DEDUCTIBLES
+---------------------------------------------------------------------------------------------
+DROP TABLE QUOTATION.FIRE_DH_PROPOSAL_ENTRY
+
+CREATE TABLE QUOTATION.FIRE_DH_PROPOSAL_ENTRY
+  (DH_REFNO VARCHAR2(12 BYTE) NOT NULL ENABLE,  --REF_NO
+   DH_BCODE VARCHAR2(60 BYTE),                   --BANK CODE NAME
+   DH_BCODE_ID VARCHAR2(10 BYTE),                   --BANK CODE 
+   DH_BBRCODE VARCHAR2(60 BYTE),                 --BRANCH CODE NAME
+   DH_BBRCODE_ID VARCHAR2(10 BYTE),                 --BRANCH CODE
+   DH_NAME VARCHAR2(100 BYTE),                  --PROPSER NAME
+   DH_AGECODE VARCHAR2(20 BYTE),                 --AGENT CODE
+   DH_AGENAME VARCHAR2(20 BYTE),                 --AGENT NAME
+   DH_NIC VARCHAR2(12 BYTE),                    --NIC
+   DH_BR VARCHAR2(12 BYTE),                     --BR CODE 
+   DH_PADD1 VARCHAR2(20 BYTE),                  --POSTAL ADD1
+   DH_PADD2 VARCHAR2(60 BYTE),                  --POSTAL ADD2
+   DH_PADD3 VARCHAR2(60 BYTE),                  --POSTAL ADD3
+   DH_PADD4 VARCHAR2(60 BYTE),                  --POSTAL ADD4
+   DH_PHONE VARCHAR2(16 BYTE),                  --PHONE
+   DH_EMAIL VARCHAR2(40 BYTE),                  --EMAIL
+   DH_IADD1 VARCHAR2(20 BYTE),                  --INSURED ADD1
+   DH_IADD2 VARCHAR2(60 BYTE),                  --INSURED ADD2
+   DH_IADD3 VARCHAR2(60 BYTE),                  --INSURED ADD3
+   DH_IADD4 VARCHAR2(60 BYTE),                  --INSURED ADD4
+   DH_PFROM DATE,                               --FROM DATE
+   DH_PTO DATE,                                 --TO DATE
+   DH_UCONSTR VARCHAR2(1 BYTE),                 --UNDER CONSTRUCTION YES OR NO
+   DH_OCCU_CAR VARCHAR2(1 BYTE),                --OCCUPATION CARRIED YES OR NO
+   DH_OCC_YES_REAS VARCHAR2(60 BYTE),           --IF OCCU YES REASON
+   DH_HAZ_OCCU  VARCHAR2(1 BYTE),               --HAZORDUS YES OR NO
+   DH_HAZ_YES_REA VARCHAR2(60 BYTE),            --HAZORDUS YES REASON
+   DH_VALU_BUILD NUMBER(16,2),                  -- VALUE OF BUILDING
+   DH_VALU_WALL NUMBER(16,2),                   -- VALUE OF WALL
+   DH_VALU_TOTAL NUMBER(16,2),                  --TOTAL SUM ASSURED
+   DH_NO_OF_FLOORS NUMBER(3),                   --NUMBER OF FLOORS
+   DH_AFF_FLOOD VARCHAR2(1 BYTE),               --AFFECTED FLOOD DURING 5 YEARS YES OR NO
+   DH_AFF_YES_REAS VARCHAR2(60 BYTE),           -- AFF. FLOOD YES REAASON
+   DH_WBRICK VARCHAR2(1 BYTE),                  --WALL BRICK YES OR NO
+   DH_WCEMENT VARCHAR2(1 BYTE),                 --WALL CEMENT YES OR NO
+   DH_DWOODEN VARCHAR2(1 BYTE),                 --DOOR WINDOWS WOODEN YES OR NO
+   DH_DMETAL VARCHAR2(1 BYTE),                  --DOOR WINDOWS METAL YES OR NO
+   DH_FTILE VARCHAR2(1 BYTE),                   --FLOOR TILE YES OR NO
+   DH_FCEMENT VARCHAR2(1 BYTE),                 --FLOOR CEMENT YES OR NO
+   DH_RTILE VARCHAR2(1 BYTE),                   --ROOF TILE YES OR NO
+   DH_RASBES VARCHAR2(1 BYTE),                  --ROOF ASBASTOSE YES OR NO
+   DH_RGI VARCHAR2(1 BYTE),                     --ROOF GI YES OR NO
+   DH_RCONCREAT VARCHAR2(1 BYTE),               --ROOF CONCREAT YES OR NO
+   DH_COV_FIRE VARCHAR2(1 BYTE),                --COVER FIRE YES OR NOT 
+   DH_COV_LIGHT VARCHAR2(1 BYTE),               --COVER LIGHT YES OR NOT 
+   DH_COV_FLOOD VARCHAR2(1 BYTE),               --COVER FLOOD YES OR NOT 
+   DH_CFWATERAVL VARCHAR2(1 BYTE),              --COVER FLOOD WATER COURSE AVALIBLE YES OR NO
+   DH_CFYESR1 VARCHAR2(60 BYTE),                --COVER FLOOD WATER COURSE AVALIBLE REASON1
+   DH_CFYESR2 VARCHAR2(60 BYTE),                --COVER FLOOD WATER COURSE AVALIBLE REASON2
+   DH_CFYESR3 VARCHAR2(60 BYTE),                --COVER FLOOD WATER COURSE AVALIBLE REASON3
+   DH_CFYESR4 VARCHAR2(60 BYTE),                --COVER FLOOD WATER COURSE AVALIBLE REASON4
+   DH_ENTERED_BY VARCHAR2(12 BYTE),             --ENTERD BY
+   DH_ENTERED_ON DATE,                          --ENTERDE DATE
+   DH_HOLD VARCHAR2(1 BYTE),                    --HOLD FLAG FOR SLIC
+   DH_OVER_VAL VARCHAR2(1 BYTE),                --HOLD FLAG FOR OVER 30M SLIC
+   DH_FINAL_FLAG VARCHAR2(1 BYTE),               --HOLD FLAG FOR IF ONE OF CONDITION IS TRUE 
+   DH_ISREQ      VARCHAR2(1),                    --VIEW PREMIUM ONLY
+   DH_CONDITIONS VARCHAR2(500),                  -- CONDTIONS ADD BY UNDERWRITERS
+   DH_ISREJECT VARCHAR2(1),                      --REJECT BY SLIC R OR N
+   DH_ISCODI VARCHAR2(1),                        --CODITION ADDED BY SLIC YES OR NO
+   DH_LOADING VARCHAR2(1),                        --LOADING ADD
+   DH_LOADING_VAL VARCHAR2(6),                     --LOADING VAL
+   CONSTRAINT PK_DH_REFNO PRIMARY KEY (DH_REFNO)
+   ); 
+   
+   SELECT * FROM QUOTATION.FIRE_DH_PROPOSAL_ENTRY;
+   
+   ---//Agent Code------------------------------------------------------
+    CREATE TABLE QUOTATION.FIRE_AGENT_INFO
+  (
+  AGENCY_CODE NUMBER(10),
+  AGE_NAME VARCHAR2(16),
+  BANCASS_GI NUMBER(4),
+  BANK_CODE VARCHAR2(6 BYTE),
+  BANK_ACC VARCHAR2(20),
+  CREATED_BY VARCHAR2(20 BYTE),
+  CREATED_ON DATE,
+  ACTIVE VARCHAR2(1 BYTE),
+  PRIMARY KEY (AGENCY_CODE)
+  ); 
+  
+  insert into QUOTATION.FIRE_AGENT_INFO values('780585','BOC','192','7010',user,sysdate,'Y');
+  SELECT * FROM  QUOTATION.FIRE_AGENT_INFO
+  --------------------------------------------------------------------------
+   
+  ---//POLICY NUMBER LAST 4 DIGITS------------------------------------------------------
+  CREATE TABLE QUOTATION.FIRE_POLICY_SEQ
+  (P_TYPE VARCHAR2(6),
+  P_YEAR VARCHAR2(6 BYTE),
+  P_MONTH VARCHAR2(6 BYTE),
+  P_SEQ VARCHAR2(6 BYTE),
+  CREATED_ON DATE,
+  ACTIVE VARCHAR2(1 BYTE)
+  ); 
+  
+  SELECT * FROM  QUOTATION.FIRE_POLICY_SEQ
+  --------------------------------------------------------------------------
+  
+  
+   
+   select t.*, t.rowid from QUOTATION.FIRE_DH_PROPOSAL_ENTRY t
+   where t.DH_REFNO = 'FPD/103'; 
+
+   select bbnam, bbrnch from GENPAY.BNKBRN
+   
+   select * from QUOTATION.BANCASU_RATE
+
+   SELECT BANK,BASIC,RCC,TR,ADMIN_FEE,POLICY_FEE 
+   FROM QUOTATION.BANCASU_RATE
+   WHERE D_TYPE='PD' AND DEPARTMENT='F'
+   AND BANK_CODE='7010'
+   AND EFFECTIVE_DATE <= SYSDATE;
+  
+  quotation.issued_quotations
+ 
+  select
+  dh_bcode,dh_bbrcode,dh_name,dh_agecode,dh_agename,dh_nic,dh_br,dh_padd1,dh_padd2,dh_padd3,
+  dh_padd4,dh_phone,dh_email,dh_iadd1,dh_iadd2,dh_iadd3,dh_iadd4,dh_pfrom,dh_pto,dh_uconstr,dh_occu_car,
+  dh_occ_yes_reas,dh_haz_occu,dh_haz_yes_rea,dh_valu_build,
+  dh_valu_wall,dh_valu_total,dh_aff_flood,dh_aff_yes_reas,dh_wbrick,dh_wcement,dh_dwooden,
+  dh_dmetal,dh_ftile,dh_fcement,dh_rtile,dh_rasbes,dh_rgi,dh_rconcreat,
+  dh_cov_fire,dh_cov_light,dh_cov_flood,dh_cfwateravl,dh_cfyesr1,dh_cfyesr2,dh_cfyesr3,dh_cfyesr4,dh_entered_by,dh_entered_on,dh_hold
+  from QUOTATION.FIRE_DH_PROPOSAL_ENTRY
+  where dh_refno='FPD/161'
+   
+  
+  SELECT * FROM QUOTATION.FIRE_DH_DEDUCTIBLES
+  
+  select count(*)
+  FROM QUOTATION.FIRE_DH_DEDUCTIBLES
+  where active='Y'
+  and dh_min_val < 30000000
+  and dh_max_val >= 30000000
+  
+  select DH_OPTION1,DH_OPTION2,DH_OPTION3,DH_OPTION4
+  FROM QUOTATION.FIRE_DH_DEDUCTIBLES
+  where active='Y'
+  and dh_min_val < 30000000
+  and dh_max_val >= 30000000
+  
+SELECT * FROM QUOTATION.FIRE_DH_SCOPE_OF_COVERS
+
+SELECT DH_SCOPE_WORD 
+FROM QUOTATION.FIRE_DH_SCOPE_OF_COVERS
+WHERE ACTIVE='Y'
+ORDER BY SEQ_ID ASC;
+
+select * from QUOTATION.FIRE_DH_SCHEDULE_CALC
+where sc_ref_no = 'FPD/103'
+
+  select sc_ref_no,sc_policy_no,sc_sum_insu,sc_net_pre,sc_rcc,sc_tr,
+  sc_admin_fee,sc_policy_fee,sc_nbt,sc_vat,sc_total_pay,created_on,created_by,flag 
+  from QUOTATION.FIRE_DH_SCHEDULE_CALC
+  where sc_ref_no = ''
+  
+  SELECT PE.dh_refno,PE.dh_bcode,PE.dh_bbrcode,PE.dh_name,PE.dh_agecode,PE.dh_agename,PE.dh_nic,PE.dh_br,PE.dh_padd1,PE.dh_padd2,PE.dh_padd3,PE.dh_padd4,
+  PE.dh_phone,PE.dh_email,PE.dh_iadd1,PE.dh_iadd2,PE.dh_iadd3,PE.dh_iadd4,PE.dh_pfrom,PE.dh_pto,PE.dh_uconstr,PE.dh_occu_car,
+  PE.dh_occ_yes_reas,PE.dh_haz_occu,PE.dh_haz_yes_rea,PE.dh_valu_build,PE.dh_valu_wall,PE.dh_valu_total,PE.dh_aff_flood,PE.dh_aff_yes_reas,PE.dh_wbrick,PE.dh_wcement,PE.dh_dwooden,PE.dh_dmetal,PE.dh_ftile,
+  PE.dh_fcement,PE.dh_rtile,PE.dh_rasbes ,PE.dh_rgi,PE.dh_rconcreat,PE.dh_cov_fire,PE.dh_cov_light,PE.dh_cov_flood,
+  PE.dh_cfwateravl,PE.dh_cfyesr1,PE.dh_cfyesr2,PE.dh_cfyesr3,PE.dh_cfyesr4,PE.dh_entered_by,PE.dh_entered_on,PE.dh_hold,
+------------------------------>>>>>>>>>>>>>>>>>>>
+  SC.sc_ref_no,SC.sc_policy_no,SC.sc_sum_insu,SC.sc_net_pre,SC.sc_rcc,
+  SC.sc_tr,SC.sc_admin_fee,SC.sc_policy_fee,SC.sc_nbt,SC.sc_vat,SC.sc_total_pay,SC.created_on,SC.created_by,SC.flag    
+        FROM 
+  
+        QUOTATION.FIRE_DH_PROPOSAL_ENTRY PE
+        INNER JOIN QUOTATION.FIRE_DH_SCHEDULE_CALC SC
+        ON PE.DH_REFNO= SC.SC_REF_NO
+        WHERE PE. DH_REFNO=''
+        
+  
+ 
+  
+  SELECT AGENCY_CODE,AGE_NAME,BANCASS_GI FROM  QUOTATION.FIRE_AGENT_INFO
+  WHERE ACTIVE='Y'
+  AND BANK_CODE =''
+
+ 
+  SELECT P_SEQ FROM QUOTATION.FIRE_POLICY_SEQ
+  WHERE P_TYPE ='FFPD'
+  AND P_YEAR = ''
+  AND P_MONTH =''
+  AND ACTIVE ='Y'
+        
+select t.*, t.rowid from QUOTATION.FIRE_AGENT_INFO t    
+SELECT * FROM  QUOTATION.FIRE_POLICY_SEQ
+
+select t.*, t.rowid from QUOTATION.FIRE_POLICY_SEQ t
+insert into QUOTATION.FIRE_POLICY_SEQ (P_TYPE,P_YEAR,P_MONTH,P_SEQ,CREATED_ON,ACTIVE)
+values (:PIN_P_TYPE,:PIN_P_YEAR,:PIN_P_MONTH,:PIN_P_SEQ,:PIN_CREATED_ON,:PIN_ACTIVE);
+
+Update QUOTATION.FIRE_POLICY_SEQ
+set P_SEQ = ''
+where P_TYPE = 'FFPD'
+and P_YEAR =''
+and P_MONTH =''
+
+UPDATE QUOTATION.FIRE_DH_SCHEDULE_CALC
+  SET SC_POLICY_NO =''
+  WHERE SC_REF_NO =''
+  
+  select * from QUOTATION.FIRE_DH_SCHEDULE_CALC WHERE SC_REF_NO ='FPD/167'
+  
+UPDATE QUOTATION.FIRE_DH_PROPOSAL_ENTRY
+set DH_FINAL_FLAG='N'
+where dh_refno='FPD/207'
+  
+    VARCHAR2(1 BYTE),                 --HOLD FLAG FOR OVER 30M SLIC
+  ALTER TABLE QUOTATION.FIRE_DH_PROPOSAL_ENTRY ADD DH_NO_OF_FLOORS NUMBER(3);
+  ALTER TABLE QUOTATION.FIRE_DH_PROPOSAL_ENTRY ADD DH_OVER_VAL VARCHAR2(1);
+  ALTER TABLE QUOTATION.FIRE_DH_PROPOSAL_ENTRY ADD DH_FINAL_FLAG VARCHAR2(1);
+ 
+ select t.*, t.rowid from QUOTATION.FIRE_DH_PROPOSAL_ENTRY t
+  
+  select * from QUOTATION.BANK_REQ_ENTRY_DETAILS 
+  where flag='P'
+  
+  
+ select 
+                    dh_bcode, dh_bbrcode, dh_name, dh_agecode, dh_agename, dh_nic, dh_br, dh_padd1, dh_padd2, dh_padd3, "+
+                    dh_padd4, dh_phone, dh_email, dh_iadd1, dh_iadd2, dh_iadd3, dh_iadd4, dh_pfrom, dh_pto, dh_uconstr, dh_occu_car, "+
+                   dh_occ_yes_reas, dh_haz_occu, dh_haz_yes_rea, dh_valu_build, "+
+                   dh_valu_wall, dh_valu_total, dh_aff_flood, dh_aff_yes_reas, dh_wbrick, dh_wcement, dh_dwooden, "+
+                    dh_dmetal, dh_ftile, dh_fcement, dh_rtile, dh_rasbes, dh_rgi, dh_rconcreat, "+
+                    dh_cov_fire, dh_cov_light, dh_cov_flood, dh_cfwateravl, dh_cfyesr1, dh_cfyesr2, dh_cfyesr3, dh_cfyesr4, dh_entered_by, dh_entered_on, dh_hold, DH_NO_OF_FLOORS, DH_OVER_VAL " +
+                    from QUOTATION.FIRE_DH_PROPOSAL_ENTRY "+
+                    where dh_refno = :txtRefNo2";
+  
+ select sc.sc_policy_no from QUOTATION.FIRE_DH_SCHEDULE_CALC where sc_policy_no like '%" + prefix.ToUpper() + "%' AND SC_POLICY_NO IS NOT NULL AND ROWNUM <= 10 order by created_on desc"
+ 
+ select sc.sc_policy_no
+ from QUOTATION.FIRE_DH_SCHEDULE_CALC SC
+ where sc.SC_POLICY_NO IS NOT NULL
+ order by sc.created_on desc;
+ 
+ "select dh_refno from QUOTATION.FIRE_DH_PROPOSAL_ENTRY where dh_refno like '%" + prefix.ToUpper() + "%' AND dh_refno IS NOT NULL AND ROWNUM <= 10 order by dh_entered_on desc";
+ 
+  select t.*, t.rowid from QUOTATION.FIRE_DH_PROPOSAL_ENTRY t
+ -- where t.dh_refno ='FFPD/287'
+  --and DH_ISREQ = 'Y'
+  order by t.dh_entered_on desc;
+  
+   select * from QUOTATION.FIRE_DH_SCHEDULE_CALC SC
+   where sc_ref_no='FFPD/284'
+   
+ 
+ 
+ 
+        select EPF, BANK_CODE, BANK_NAME, OFFICER_NAME, DESIGNATION, CONTACT_NO, EMAIL
+         from QUOTATION.BANK_SALES_OFFICER
+        where BANK_CODE = '" + bank + "'
+        and DESIGNATION = 'Sales Officer'
+        and flag = 'A'";
+select t.*, t.rowid from QUOTATION.FIRE_POLICY_SEQ t
+
+select * from QUOTATION.FIRE_DH_PROPOSAL_ENTRY
+ 
+ alter table QUOTATION.FIRE_DH_PROPOSAL_ENTRY add DH_ISREQ VARCHAR2(1),
+ alter table QUOTATION.FIRE_DH_PROPOSAL_ENTRY add DH_CONDITIONS VARCHAR2(500);
+ 
+  alter table QUOTATION.FIRE_DH_PROPOSAL_ENTRY add DH_ISREJECT VARCHAR2(1),
+ alter table QUOTATION.FIRE_DH_PROPOSAL_ENTRY add DH_ISCODI VARCHAR2(1);
+ 
+ 
+  alter table QUOTATION.FIRE_DH_PROPOSAL_ENTRY add DH_BCODE_ID VARCHAR2(10 BYTE),                
+  alter table QUOTATION.FIRE_DH_SCHEDULE_CALC add UPDATED_BY VARCHAR2(12) ,           
+
+  select t.*, t.rowid from QUOTATION.FIRE_DH_PROPOSAL_ENTRY t
+ FFPD/403
+ select t.*, t.rowid from QUOTATION.FIRE_DH_SCHEDULE_CALC T 1424
+ SELECT t.*, t.rowid FROM QUOTATION.FIRE_DH_SCHEDULE_CALC_HISTORY T
+ 
+ truncate table QUOTATION.FIRE_DH_PROPOSAL_ENTRY
+ 
+ truncate table QUOTATION.FIRE_DH_SCHEDULE_CALC
+ 
+UPDATE QUOTATION.FIRE_DH_PROPOSAL_ENTRY set DH_ISREJECT = 'Y' where dh_refno = 'FFPD/383'
+  ALTER TABLE QUOTATION.FIRE_DH_PROPOSAL_ENTRY MODIFY  DH_LOADING_VAL VARCHAR2(6)
+   ALTER TABLE QUOTATION.FIRE_AGENT_INFO add BANK_ACC VARCHAR2(20);
+  
+ 
+  ඔබගේ සුරක්ෂා හිමිකමට අදාල නිරාකරණ කටයුතු සැකසෙමින් පවති

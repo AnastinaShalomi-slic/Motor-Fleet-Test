@@ -1,0 +1,748 @@
+﻿using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using System.Configuration;
+using System.Drawing;
+using System.Web.Services;
+using System.Collections.Generic;
+using System.Data.OracleClient;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Web;
+using System.IO;
+using System.Globalization;
+
+public partial class Bank_Fire_PremiumCal : System.Web.UI.Page
+{
+    Oracle_Transaction orcle_trans = new Oracle_Transaction();
+    Execute_sql _sql = new Execute_sql();
+    Update_class exe_up = new Update_class();
+    Ip_Class get_ip = new Ip_Class();
+    EncryptDecrypt dc = new EncryptDecrypt();
+    DeviceFinder findDev = new DeviceFinder();
+    DeviceFinder df = new DeviceFinder();
+    ORCL_Connection orcl_con = new ORCL_Connection();
+    Insert_class insert_ = new Insert_class();
+    GetProposalDetails getPropClass = new GetProposalDetails();
+
+    DetailsForfireEmailReq emailSend = new DetailsForfireEmailReq();
+
+    public string[] ReturnCovers = new string[13];
+    //public string[] emailID = new string[6];
+
+    List<String> emailID = new List<String>();
+    List<String> emailIDForCC = new List<String>();
+
+    string agentCode, agentName, BGI, BANK_ACC = string.Empty;
+    string shortDes = string.Empty;
+    string days = string.Empty;
+    string hours = string.Empty;
+    string minutes = string.Empty;
+    string seconds = string.Empty;
+
+    string day_msg = string.Empty;
+    string hours_msg = string.Empty;
+    string minutes_msg = string.Empty;
+    public string fd_ref_no = string.Empty;
+    public string flag = string.Empty;
+    public string quo_no_temp = string.Empty;
+    public string prinPolicyNumber = string.Empty;
+    public string over_Val = string.Empty;
+
+    string qrefNo, UsrId = "", reqTyp = "", mgs = "";
+    string rID = "";
+    string filePath = "", ext = "";
+    bool cancelBtn = false;
+    List<string> optionList;
+    private string SessionUserId = "";
+    private string SessionbrCode = "";
+    int emailRtn = 0;
+    string PreviousClaim = "", ccEmailIds = "";
+
+    string BANK = string.Empty;
+    double sumInsu, BASIC, RCC, TR, ADMIN_FEE, POLICY_FEE = 0;
+
+    double CalNetPre, Cal_RCC, Cal_TR, Cal_ADMIN_FEE, Cal_POLICY_FEE, Cal_NBT, Cal_VAT, Cal_Total = 0;
+    double CalNetPreTemp, Cal_RCCTemp, Cal_TRTemp, Cal_ADMIN_FEETemp, Cal_POLICY_FEETemp, Cal_NBTTemp, Cal_VATTemp, Cal_TotalTemp = 0;
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        
+
+        ScriptManager scriptManager = ScriptManager.GetCurrent(this.Page);
+     
+
+        if (!Page.IsPostBack)
+        {
+            try
+            {
+               
+
+
+                    txt_Ref_no.Focus();
+                    var en = new EncryptDecrypt();
+
+
+                if (Request.QueryString["Ref_no"] != null)
+                {
+                    fd_ref_no = en.Decrypt(Request.QueryString["Ref_no"]);
+
+
+                    if (string.IsNullOrEmpty(fd_ref_no) || fd_ref_no == "#") //|| string.IsNullOrEmpty(app) || app == "#" || string.IsNullOrEmpty(requ) || requ == "#"
+                    {
+
+                   
+                        var endc = new EncryptDecrypt();
+                        Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("URL".ToString()));
+                    }
+                    else
+                    {
+                        var endc = new EncryptDecrypt();
+                        txt_Ref_no.Text = en.Decrypt(Request.QueryString["Ref_no"]);
+                        flag = en.Decrypt(Request.QueryString["Flag"]);
+                        //flag = Request.QueryString["Flag"];
+                        over_Val = en.Decrypt(Request.QueryString["overVal"]);
+                        //over_Val = Request.QueryString["overVal"];
+                        //txt_NetPre.Text = en.Decrypt(Request.QueryString["sumInsu"]);
+                        sumInsu = Convert.ToDouble(en.Decrypt(Request.QueryString["sumInsu"]));
+                        sumInsuVal.Value = sumInsu.ToString();
+
+                       
+
+
+                        lblreqsend.Visible = false;
+                            if (flag == "Y" || over_Val=="Y")
+                            {
+                            quo.Visible = true;
+                            printProp.Visible = false;
+                        
+                            }
+
+                            else
+                            {
+                            quo.Visible = false;
+                            printProp.Visible = true;
+                        
+                        }
+
+                            this.GetRates(Session["bank_code"].ToString().Trim());
+                            this.PremiumCalculation(sumInsu);
+
+
+                        }
+
+                    }
+
+            }
+            catch (Exception ex)
+            {
+                var endc = new EncryptDecrypt();
+                Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("APP_ERROR".ToString()) + "&APP_ERROR_MSG=" + endc.Encrypt(ex.Message.ToString()));
+            }
+
+        }
+        else
+        {
+            /* IF PAGE.POSTBACK ASSIGHEN SESSION VARIABLE */
+            //Session["UserId"] = UserId.Value;
+            //Session["brcode"] = brCode.Value;
+        }
+
+
+    }
+
+
+    [WebMethod]
+    public static string[] Get_Ref_No(string prefix)
+    {
+        List<string> ref_no = new List<string>();
+        using (OracleConnection conn = new OracleConnection())
+        {
+            conn.ConnectionString = ConfigurationManager.ConnectionStrings["CONN_STRING_ORCL"].ConnectionString;
+            using (OracleCommand cmd = new OracleCommand())
+            {
+                cmd.CommandText = "select qref_no from QUOTATION.issued_quotations where qref_no like '%" + prefix.ToUpper() + "%' AND ROWNUM <= 10 order by QENT_DATE desc";
+                cmd.Connection = conn;
+                conn.Open();
+                using (OracleDataReader sdr = cmd.ExecuteReader())
+                {
+                    while (sdr.Read())
+                    {
+                        ref_no.Add(string.Format("{0}", sdr["qref_no"]));
+                    }
+                }
+                conn.Close();
+            }
+            return ref_no.ToArray();
+        }
+    }
+
+
+    protected void GetTimeSpend(string t_date, string status)
+    {
+        DataTable details = new DataTable();
+        try
+        {
+            details = orcle_trans.GetRows(this._sql.GetTimeDuration(t_date.Trim()), details);
+
+            if (orcle_trans.Trans_Sucess_State == true)
+            {
+
+                if (details.Rows.Count > 0)
+                {   //dt.Rows[rows]["Diesel Tax"].ToString());
+
+                    days = details.Rows[0]["days"].ToString();
+                    hours = details.Rows[0]["hours"].ToString();
+                    minutes = details.Rows[0]["minutes"].ToString();
+                    seconds = details.Rows[0]["seconds"].ToString();
+                    //Grid_Details.DataBind();
+
+
+                    if (Convert.ToInt32(days) > 0)
+                    {
+                        day_msg = Convert.ToInt32(days).ToString() + " days";
+                    }
+                    //else { day_msg = "today"; }
+
+                    if (Convert.ToInt32(hours) > 0)
+                    {
+                        hours_msg = Convert.ToInt32(hours).ToString() + " hours";
+                    }
+
+                    //else { hours_msg = ""; }
+                    if (Convert.ToInt32(minutes) > 0)
+                    {
+                        minutes_msg = Convert.ToInt32(minutes).ToString() + " minutes";
+                    }
+                    //else { minutes_msg = ""; }
+                    if (status == "Approved")
+                    {
+                        string msg = "Quotation Approved " + day_msg + " " + hours_msg + " " + minutes_msg + " ago.!";
+
+                        labelMessage.Text = msg;
+                        Message.CssClass = String.Format("alert alert-{0} alert-dismissable", PopupMessageType.Success.ToString().ToLower());
+                        //Message.Attributes.Add("role", "alert");
+                        Message.Attributes.Add("Style", "color: #fff; background-color:#39915c; text-align:center;");
+
+                        //ShowPopupMessage(msg, PopupMessageType.Message);
+                    }
+                    else if (status == "Rejected")
+                    {
+                        string msg = "Quotation Rejected " + day_msg + " " + hours_msg + " " + minutes_msg + " ago.!";
+                        labelMessage.Text = msg;
+                        Message.CssClass = String.Format("alert alert-{0} alert-dismissable", PopupMessageType.Warning.ToString().ToLower());
+                        Message.Attributes.Add("Style", "color: #fff; background-color:#f24646; text-align:center;");
+
+                        //ShowPopupMessage(msg, PopupMessageType.Message);
+                    }
+                    else
+                    {
+
+                        string msg = "Quotation Pending " + day_msg + " " + hours_msg + " " + minutes_msg + "!";
+
+                        labelMessage.Text = msg;
+                        Message.CssClass = String.Format("alert alert-{0} alert-dismissable", PopupMessageType.Warning.ToString().ToLower());
+                        Message.Attributes.Add("Style", "color: #fff; background-color:#f24646; text-align:center;");
+
+                        //pendingTime.InnerText = "Waiting time " + day_msg + " " + hours_msg + " " + minutes_msg + "!";
+
+                        //ShowPopupMessage(msg, PopupMessageType.Message);
+                        //labelMessage.Text = msg;
+                        //Message.CssClass = String.Fo rmat("alert alert-{0} alert-dismissable", PopupMessageType.Warning.ToString().ToLower());
+                        //Message.Attributes.Add("role", "alert");
+                    }
+
+
+
+                }
+                else
+                {
+                    string msg = "Message : No Records found. Dated on " + System.DateTime.Now.ToString();
+                    var endc = new EncryptDecrypt();
+                    Response.Redirect("~/session_error/MessagePages.aspx?error=" + endc.Encrypt("ERROR_CLOSE".ToString()) + "&APP_MSG=" + endc.Encrypt(msg) + "&code=" + endc.Encrypt("2".ToString()));
+
+                }
+            }
+            else
+            {
+                var endc = new EncryptDecrypt();
+                Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("ORCL".ToString()) + "&ORL_ERR=" + endc.Encrypt(orcle_trans.Error_Message.ToString()));
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            var endc = new EncryptDecrypt();
+            Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("APP_ERROR".ToString()) + "&APP_ERROR_MSG=" + endc.Encrypt(ex.Message.ToString()));
+        }
+    }
+
+
+    protected void GetRates(string bank_code)
+    {
+        DataTable details = new DataTable();
+        try
+        {
+            details = orcle_trans.GetRows(this._sql.GetFireRate(bank_code), details);
+
+            if (orcle_trans.Trans_Sucess_State == true)
+            {
+
+                if (details.Rows.Count > 0)
+                {          
+                    BANK = details.Rows[0]["BANK"].ToString();
+                    BASIC = Convert.ToDouble(details.Rows[0]["BASIC"].ToString());
+                    RCC = Convert.ToDouble(details.Rows[0]["RCC"].ToString());
+                    TR = Convert.ToDouble(details.Rows[0]["TR"].ToString());
+                    ADMIN_FEE = Convert.ToDouble(details.Rows[0]["ADMIN_FEE"].ToString());
+                    POLICY_FEE = Convert.ToDouble(details.Rows[0]["POLICY_FEE"].ToString());
+
+                 }
+                else
+                {
+
+                    string msg = "Message : No Records found. Dated on " + System.DateTime.Now.ToString();
+                    var endc = new EncryptDecrypt();
+                    Response.Redirect("~/session_error/MessagePages.aspx?error=" + endc.Encrypt("ERROR_CLOSE".ToString()) + "&APP_MSG=" + endc.Encrypt(msg) + "&code=" + endc.Encrypt("2".ToString()));
+                }
+            }
+            else
+            {
+                var endc = new EncryptDecrypt();
+                Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("ORCL".ToString()) + "&ORL_ERR=" + endc.Encrypt(orcle_trans.Error_Message.ToString()));
+            }
+        }
+        catch (Exception ex)
+        {
+            var endc = new EncryptDecrypt();
+            Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("APP_ERROR".ToString()) + "&APP_ERROR_MSG=" + endc.Encrypt(ex.Message.ToString()));
+        }
+    }
+
+
+    /// <summary>
+    /// Message type enum
+    /// </summary>
+    public enum PopupMessageType
+    {
+        Error,
+        Message,
+        Warning,
+        Success
+    }
+  
+   
+
+    public void ShowMessage(string Message, WarningType type)
+    {
+        //gets the controls from the page
+        Panel PanelMessage = Master.FindControl("Message") as Panel;
+        Label labelMessage = PanelMessage.FindControl("labelMessage") as Label;
+
+        //sets the message and the type of alert, than displays the message
+        labelMessage.Text = Message;
+        PanelMessage.CssClass = string.Format("alert alert-{0} alert-dismissable", type.ToString().ToLower());
+        PanelMessage.Attributes.Add("role", "alert");
+        PanelMessage.Visible = true;
+    }
+
+   
+    public enum WarningType
+    {
+        Success,
+        Info,
+        Warning,
+        Danger
+    }
+
+    public void PremiumCalculation(double sumInsu) {
+        try {
+
+        
+            CalNetPreTemp = ((sumInsu * BASIC) / 100);
+            CalNetPre = Math.Round(((sumInsu * BASIC) / 100), 2, MidpointRounding.AwayFromZero);
+
+            Cal_RCCTemp = (sumInsu * RCC) / 100;
+            Cal_RCC = Math.Round(((sumInsu * RCC) / 100), 2, MidpointRounding.AwayFromZero);
+
+            Cal_TRTemp = (sumInsu * TR) / 100;
+            Cal_TR = Math.Round(((sumInsu * TR) / 100), 2, MidpointRounding.AwayFromZero);
+
+            Cal_POLICY_FEETemp = POLICY_FEE;
+            Cal_POLICY_FEE = Math.Round((POLICY_FEE), 2, MidpointRounding.AwayFromZero);
+
+            Cal_ADMIN_FEETemp = ((CalNetPreTemp + Cal_RCCTemp + Cal_TRTemp) * ADMIN_FEE) / 100;
+            Cal_ADMIN_FEE = Math.Round((((CalNetPre + Cal_RCC + Cal_TR) * ADMIN_FEE) / 100), 2, MidpointRounding.AwayFromZero);
+
+            double sumForTaxVat = 0;
+            sumForTaxVat = CalNetPreTemp + Cal_RCCTemp + Cal_TRTemp + Cal_POLICY_FEETemp + Cal_ADMIN_FEETemp;
+
+            using (OracleConnection conn = orcl_con.GetConnection())
+            {
+                conn.Open();
+                using (OracleCommand cmd = new OracleCommand("GENPAY.CALCULATE_NBL_AND_VAT", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("taxLiableAmount", sumForTaxVat);
+                    cmd.Parameters.AddWithValue("requestDate", DateTime.ParseExact(DateTime.Now.ToString("yyyy/MM/dd"), "yyyy/MM/dd", CultureInfo.InvariantCulture));
+                    cmd.Parameters.Add("nblAmount", OracleType.Number).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("vatAmount", OracleType.Number).Direction = ParameterDirection.Output;
+
+                    OracleDataReader dr = cmd.ExecuteReader();
+
+                    Cal_NBTTemp = double.Parse(cmd.Parameters["nblAmount"].Value.ToString());
+                    Cal_VATTemp = double.Parse(cmd.Parameters["vatAmount"].Value.ToString());
+
+                    dr.Close();
+                 
+                }
+                conn.Close();
+            }
+       
+
+              Cal_NBT = Math.Round((Cal_NBTTemp), 2, MidpointRounding.AwayFromZero);
+              Cal_VAT = Math.Round((Cal_VATTemp), 2, MidpointRounding.AwayFromZero);
+
+              Cal_TotalTemp = sumForTaxVat + Cal_NBTTemp + Cal_VATTemp;
+              Cal_Total = Math.Round((Cal_TotalTemp), 2, MidpointRounding.AwayFromZero);
+
+            //----------dispaly values-------------------------------
+
+            string cal_ref = "";
+            if (flag == "Y")
+            {
+                bool inserted = this.insert_.insert_fire_sche_cal_details(fd_ref_no, "", sumInsu, CalNetPre, Cal_RCC, Cal_TR,
+                 Cal_ADMIN_FEE, Cal_POLICY_FEE, Cal_NBT, Cal_VAT, Cal_Total, "", Session["userName_code"].ToString(), "P",0, out cal_ref);
+            }
+            else
+            {
+                bool inserted = this.insert_.insert_fire_sche_cal_details(fd_ref_no, "", sumInsu, CalNetPre, Cal_RCC, Cal_TR,
+                 Cal_ADMIN_FEE, Cal_POLICY_FEE, Cal_NBT, Cal_VAT, Cal_Total, "", Session["userName_code"].ToString(), "D",0, out cal_ref);
+            }
+
+            txt_NetPre.Text = CalNetPre.ToString("n2");
+            txt_srcc.Text = Cal_RCC.ToString("n2");
+            txt_tr.Text = Cal_TR.ToString("n2");
+            txt_adminFee.Text = Cal_ADMIN_FEE.ToString("n2");
+            txtPoliFee.Text = Cal_POLICY_FEE.ToString("n2");
+            txt_nbt.Text = Cal_NBT.ToString("n2");
+            txt_vat.Text = Cal_VAT.ToString("n2");
+            txtTotalPay.Text = Cal_Total.ToString("n2");
+        }
+        catch (Exception ex) {
+            var endc = new EncryptDecrypt();
+            Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("APP_ERROR".ToString()) + "&APP_ERROR_MSG=" + endc.Encrypt(ex.Message.ToString()),false);
+        }
+        
+    }
+
+
+
+
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            ReturnCovers = getPropClass.getFireCoverArray();
+            lblCover.Text = ReturnCovers[1];
+            // dv1.Controls.Add(new TextBox());
+            for (int i = 0; i < ReturnCovers.Length; i++)
+            {
+                Label lbl = new Label();
+                lbl.Text = "* " + ReturnCovers[i];
+                dv1.Controls.Add(lbl);
+                dv1.Controls.Add(new LiteralControl("<br/>"));
+            }
+            this.createPolicyNumber();
+
+
+            bool iSReq = this.exe_up.update_HoldFlagPrintOrNot(txt_Ref_no.Text.Trim().ToString());
+            if (iSReq)
+            {
+                lblreqsend.Visible = false;
+            }
+            string fd_ref = txt_Ref_no.Text.Trim();
+            string fd_flag = "Y";
+            string fd_sum = sumInsuVal.Value;
+
+            var endc = new EncryptDecrypt();
+            //Response.Redirect("~/session_error/MessagePages.aspx?error=" + endc.Encrypt("DONE".ToString()) + "&APP_MSG=" + endc.Encrypt(msg) + "&code=" + endc.Encrypt("1".ToString()) + "&ref_send=" + endc.Encrypt(ref_send),false);
+            Response.Redirect("PrintSchedule.aspx?Ref_no=" + endc.Encrypt(fd_ref) + "&Flag=" + endc.Encrypt(fd_flag) + "&sumInsu=" + endc.Encrypt(fd_sum.ToString()), false);
+        }
+
+        catch(Exception ex)
+        {
+
+        }
+
+    }
+
+
+    protected void createPolicyNumber()
+    {
+        string currentMonth = DateTime.Now.ToString("MM");//DateTime.Now.Month.ToString();
+        string currentYear = DateTime.Now.ToString("yy");//DateTime.Now.Year.ToString();
+        string seq_return = "";
+
+        string seq_id = orcle_trans.GetString(this._sql.GetPolSeq(currentYear, currentMonth));
+
+        if (string.IsNullOrEmpty(seq_id))
+        {
+            string out_word = "";
+
+            bool RESULT = insert_.insert_new_seq_for_policyNumber("FFPD", currentYear, currentMonth, "00000", "", "Y", out out_word);
+
+            string seq_id_second = orcle_trans.GetString(this._sql.GetPolSeq(currentYear, currentMonth));
+
+            seq_return = (Convert.ToInt32(seq_id_second) + 1).ToString();
+
+            if (seq_return.Length == 1) { seq_return = "0000" + seq_return; }
+            else if (seq_return.Length == 2) { seq_return = "000" + seq_return; }
+            else if (seq_return.Length == 3) { seq_return = "00" + seq_return; }
+            else if (seq_return.Length == 4) { seq_return = "0" + seq_return; }
+            else { seq_return = seq_return; }
+
+            bool result = exe_up.update_policySeqNumber(seq_return, currentYear, currentMonth);
+
+
+        }
+        else
+        {
+            seq_return = (Convert.ToInt32(seq_id) + 1).ToString();
+
+            if (seq_return.Length == 1) { seq_return = "0000" + seq_return; }
+            else if (seq_return.Length == 2) { seq_return = "000" + seq_return; }
+            else if (seq_return.Length == 3) { seq_return = "00" + seq_return; }
+            else if (seq_return.Length == 4) { seq_return = "0" + seq_return; }
+            else { seq_return = seq_return; }
+
+            bool result = exe_up.update_policySeqNumber(seq_return, currentYear, currentMonth);
+
+        }
+
+        this.GetAgentDetails(Session["bank_code"].ToString());
+        //policy_number.InnerHtml = currentYear + currentMonth + BGI + seq_return;
+        prinPolicyNumber = "FFPD"+currentYear +  BGI + seq_return;
+        //prinPolicyNumber = "FFPD" + currentYear + currentMonth + BGI + seq_return;
+        bool POL_NUM = exe_up.update_policyNumberInCalTable(txt_Ref_no.Text.Trim(), prinPolicyNumber);
+    }
+
+
+    protected void GetAgentDetails(string bank_code)
+    {
+        DataTable details = new DataTable();
+        try
+        {
+            details = orcle_trans.GetRows(this._sql.GetAgentDetails(bank_code), details);
+
+            if (orcle_trans.Trans_Sucess_State == true)
+            {
+
+                if (details.Rows.Count > 0)
+                {
+
+                    agentCode = details.Rows[0]["AGENCY_CODE"].ToString();
+                    agentName = details.Rows[0]["AGE_NAME"].ToString();
+                    BGI = details.Rows[0]["BANCASS_GI"].ToString();
+                    BANK_ACC = details.Rows[0]["BANK_ACC"].ToString();
+                }
+                else
+                {
+
+                    string msg = "Message : No Records found. Dated on " + System.DateTime.Now.ToString();
+                    var endc = new EncryptDecrypt();
+                    Response.Redirect("~/session_error/MessagePages.aspx?error=" + endc.Encrypt("ERROR_CLOSE".ToString()) + "&APP_MSG=" + endc.Encrypt(msg) + "&code=" + endc.Encrypt("2".ToString()));
+                }
+            }
+            else
+            {
+                var endc = new EncryptDecrypt();
+                Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("ORCL".ToString()) + "&ORL_ERR=" + endc.Encrypt(orcle_trans.Error_Message.ToString()));
+            }
+        }
+        catch (Exception ex)
+        {
+            var endc = new EncryptDecrypt();
+            Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("APP_ERROR".ToString()) + "&APP_ERROR_MSG=" + endc.Encrypt(ex.Message.ToString()));
+        }
+    }
+
+
+
+    protected void btback1_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("ProposalEntry.aspx");
+    }
+
+
+    protected void GetPhoneNumberofOfficers(string req_id)
+    {
+        string officerContact = string.Empty;
+        int rtnCount = 0;
+        DataTable details = new DataTable();
+        try
+        {
+            details = orcle_trans.GetRows(this._sql.GetOfficer(Session["bank_code"].ToString()), details);
+
+            if (orcle_trans.Trans_Sucess_State == true)
+            {
+
+                if (details.Rows.Count > 0)
+                {
+                    for (int i = 0; i < details.Rows.Count; i++)
+                    {
+                        officerContact = details.Rows[i]["CONTACT_NO"].ToString().Substring(1);
+                        officerContact = "94" + officerContact;
+
+                        string txt_body = "Fire Policy Approval Request from Bank. Reference ID : ";
+
+                        this.insert_.Send_sms_to_customer(officerContact, req_id, txt_body, out rtnCount);
+
+                    }
+
+                }
+                else
+                {
+                    officerContact = "";
+
+                }
+            }
+            else
+            {
+                var endc = new EncryptDecrypt();
+                Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("ORCL".ToString()) + "&ORL_ERR=" + endc.Encrypt(orcle_trans.Error_Message.ToString()));
+
+            }
+        }
+        catch (Exception ex)
+        {
+            var endc = new EncryptDecrypt();
+            Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("APP_ERROR".ToString()) + "&APP_ERROR_MSG=" + endc.Encrypt(ex.Message.ToString()));
+
+        }
+    }
+
+    protected void btsendrequest_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            bool iSReq = this.exe_up.update_HoldFlagPrintOrNot(txt_Ref_no.Text.Trim().ToString());
+            if (iSReq)
+            {
+                this.GetPhoneNumberofOfficers(txt_Ref_no.Text.Trim().ToString());
+                
+                this.sendEmailToSLICOfficer(Session["bank_code"].ToString());
+
+                lblreqsend.Visible = true;
+                btsendrequest.Enabled = false;
+
+                string msg = "Approval Request Successfully Sent to SLIC.!";
+                var endc = new EncryptDecrypt();
+                Response.Redirect("~/session_error/MessagePages.aspx?error=" + endc.Encrypt("DONE".ToString()) + "&APP_MSG=" + endc.Encrypt(msg) + "&code=" + endc.Encrypt("6"), false);
+                
+
+                //email send to slic officers
+            }
+        }
+        catch (Exception ex)
+        {
+            var endc = new EncryptDecrypt();
+            Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("APP_ERROR".ToString()) + "&APP_ERROR_MSG=" + endc.Encrypt(ex.Message.ToString()));
+        }
+    }
+
+    protected void sendEmailToSLICOfficer(string req_id)
+    {
+        this.GetEmailsrofOfficers(Session["bank_code"].ToString());
+        string ccEmails = string.Empty;
+        string toEmails = string.Empty;
+
+
+        ccEmails = String.Join(", ", emailIDForCC);
+        toEmails = String.Join(", ", emailID);
+
+        emailSend.fireRequestDetails("NR", Session["bank_code"].ToString(), toEmails, ccEmails, txt_Ref_no.Text.Trim().ToString(), Session["temp_bank"].ToString(), Session["temp_branch"].ToString(), Session["bancass_email"].ToString());
+
+    }
+
+
+    protected void GetEmailsrofOfficers(string bank_code)
+    {
+        string officerEmails = string.Empty;
+        string officerEmailsCC = string.Empty;
+        //int rtnCount = 0;
+        DataTable details = new DataTable();
+        DataTable detailsforCC = new DataTable();
+        try
+        {
+            details = orcle_trans.GetRows(this._sql.GetOfficerEmail(Session["bank_code"].ToString()), details);
+
+            if (orcle_trans.Trans_Sucess_State == true)
+            {
+
+                if (details.Rows.Count > 0)
+                {
+                    for (int i = 0; i < details.Rows.Count; i++)
+                    {
+                        emailID.Add(details.Rows[i]["EMAIL"].ToString());                      
+                    }
+
+                }
+                else
+                {
+                    officerEmails = "";
+
+                }
+            }
+            else
+            {
+                var endc = new EncryptDecrypt();
+                Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("ORCL".ToString()) + "&ORL_ERR=" + endc.Encrypt(orcle_trans.Error_Message.ToString()));
+
+            }
+
+
+            /// second  table for CC user emails
+
+            detailsforCC = orcle_trans.GetRows(this._sql.GetOfficerEmailForCC(Session["bank_code"].ToString()), detailsforCC);
+
+            if (orcle_trans.Trans_Sucess_State == true)
+            {
+
+                if (detailsforCC.Rows.Count > 0)
+                {
+                    for (int i = 0; i < detailsforCC.Rows.Count; i++)
+                    {
+                        emailIDForCC.Add(detailsforCC.Rows[i]["EMAIL"].ToString());
+                    }
+
+                }
+                else
+                {
+                    officerEmailsCC = "";
+
+                }
+            }
+            else
+            {
+                var endc = new EncryptDecrypt();
+                Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("ORCL".ToString()) + "&ORL_ERR=" + endc.Encrypt(orcle_trans.Error_Message.ToString()));
+
+            }
+
+        }
+        catch (Exception ex)
+        {
+            var endc = new EncryptDecrypt();
+            Response.Redirect("~/session_error/sessionError.aspx?error=" + endc.Encrypt("APP_ERROR".ToString()) + "&APP_ERROR_MSG=" + endc.Encrypt(ex.Message.ToString()));
+
+        }
+    }
+
+
+
+}
