@@ -239,31 +239,70 @@ public partial class FleetQuot : System.Web.UI.Page
     protected void btn_PAB_DRV_Cal(object sender, EventArgs e)
     {
         string subcat = ddlSubCat.SelectedValue;
-
+        double sumInsur = 0;
+        int noOfPa = 0;
         foreach (GridViewRow row in gvCovers.Rows)
         {
             CheckBox chkSelect = row.FindControl("chkSelect") as CheckBox;
 
             if (chkSelect != null && chkSelect.Checked)
             {
-                string coverName = row.Cells[0].Text;  
+                string coverName = row.Cells[0].Text;
 
                 TextBox txtPassengers = row.FindControl("txtPassengers") as TextBox;
-                string noOfPassengers = txtPassengers != null ? txtPassengers.Text : "";
+                int noOfPassengers = txtPassengers != null ? Convert.ToInt32(txtPassengers.Text) : 0;
 
                 TextBox txtSumInsured = row.FindControl("txtSumInsured") as TextBox;
-                string sumInsured = txtSumInsured != null ? txtSumInsured.Text : "0";
+                double sumInsured = (txtSumInsured != null
+                                    && !string.IsNullOrWhiteSpace(txtSumInsured.Text)
+                                    && txtSumInsured.Text != "0")
+                                    ? Convert.ToDouble(txtSumInsured.Text)
+                                    : 0;
 
-                var rate = _sql2.GetRateDetails(subcat);
-
-                double mbrate = rate["MRPADCA"] != null ? Convert.ToDouble(rate["MRPADCA"]) : 0;
-
-               double pab3Val = _sql2.PAB_Rate_Calculation(Convert.ToInt32(noOfPassengers), Convert.ToDouble(sumInsured), mbrate);
-
-                pabRate.Text = pab3Val.ToString();
+                noOfPa = noOfPa + noOfPassengers;
+                sumInsur = sumInsur + sumInsured;
             }
         }
 
+        var rate = _sql2.GetRateDetails(subcat);
+
+        double mbrate = rate["MRPADCA"] != null ? Convert.ToDouble(rate["MRPADCA"]) : 0;
+
+        double pab3Val = _sql2.PAB_Rate_Calculation(noOfPa, sumInsur, mbrate);
+
+        pabRate.Text = pab3Val.ToString();
+
 
     }
+
+    //protected void btn_PAB_DRV_Cal(object sender, EventArgs e)
+    //{
+    //    string subcat = ddlSubCat.SelectedValue;
+
+    //    foreach (GridViewRow row in gvCovers.Rows)
+    //    {
+    //        CheckBox chkSelect = row.FindControl("chkSelect") as CheckBox;
+
+    //        if (chkSelect != null && chkSelect.Checked)
+    //        {
+    //            string coverName = row.Cells[0].Text;  
+
+    //            TextBox txtPassengers = row.FindControl("txtPassengers") as TextBox;
+    //            string noOfPassengers = txtPassengers != null ? txtPassengers.Text : "";
+
+    //            TextBox txtSumInsured = row.FindControl("txtSumInsured") as TextBox;
+    //            string sumInsured = txtSumInsured != null ? txtSumInsured.Text : "0";
+
+    //            var rate = _sql2.GetRateDetails(subcat);
+
+    //            double mbrate = rate["MRPADCA"] != null ? Convert.ToDouble(rate["MRPADCA"]) : 0;
+
+    //           double pab3Val = _sql2.PAB_Rate_Calculation(Convert.ToInt32(noOfPassengers), Convert.ToDouble(sumInsured), mbrate);
+
+    //            pabRate.Text = pab3Val.ToString();
+    //        }
+    //    }
+
+
+    //}
 }
